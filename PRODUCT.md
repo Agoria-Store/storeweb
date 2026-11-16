@@ -33,7 +33,7 @@ Pay in USDT on TRC20 only, and buy granularly: full course, single chapter, or s
 
 ## Brand Commitments
 
-- Brand name: Agoria Store. Logo: orange owl head with a gold leaf (`apps/site/public/logo.svg`, also the favicon), redrawn as SVG from the supplied artwork.
+- Brand name: Agoria Store. Logo: orange owl head with a gold leaf, from the supplied artwork with its white background removed (`apps/site/public/logo.png` 512px master; `logo-128.png` nav, `favicon-64.png`, `apple-touch-icon.png`).
 - Standing preference (2026-11-16): a general, modern, light design at the craft level of Stripe and Gumroad / Lemon Squeezy, not a themed concept world. Subtle three.js hero allowed. Themed worlds (exchange board, banknote) were tried and rejected.
 
 ## Evidence on Hand
