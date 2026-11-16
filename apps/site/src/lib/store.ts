@@ -9,4 +9,4 @@ export function store(): Promise<StoreClient> {
 }
 
 export const TELEGRAM_BOT_URL = import.meta.env.PUBLIC_TELEGRAM_BOT_URL || '#';
-export const BRAND = '[BRAND NAME]';
+export const BRAND = 'Agoria Store';

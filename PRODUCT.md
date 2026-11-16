@@ -29,11 +29,11 @@ Pay in USDT on TRC20 only, and buy granularly: full course, single chapter, or s
 - Astro static site on Cloudflare Pages. TypeScript. Small JS islands.
 - Performance budget: LCP < 2.5 s on mid-range mobile, Lighthouse performance ≥ 85.
 - Respect `prefers-reduced-motion`; mobile-first; keyboard navigable; 4.5:1 body contrast.
-- Undecided: brand name, logo, store platform, domain, real course list and prices.
+- Undecided: store platform, domain, real course list and prices.
 
 ## Brand Commitments
 
-- No brand name or logo yet.
+- Brand name: Agoria Store. Logo: orange owl head with a gold leaf (`apps/site/public/logo.svg`, also the favicon), redrawn as SVG from the supplied artwork.
 - Standing preference (2026-11-16): a general, modern, light design at the craft level of Stripe and Gumroad / Lemon Squeezy, not a themed concept world. Subtle three.js hero allowed. Themed worlds (exchange board, banknote) were tried and rejected.
 
 ## Evidence on Hand

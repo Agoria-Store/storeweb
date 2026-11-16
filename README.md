@@ -1,4 +1,4 @@
-# storeweb
+# Agoria Store (storeweb)
 
 Landing site, Telegram bot and shared store adapter for a crypto/trading video course store paid in USDT (TRC20).
 
