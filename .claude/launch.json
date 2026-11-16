@@ -4,7 +4,7 @@
     {
       "name": "site",
       "runtimeExecutable": "corepack",
-      "runtimeArgs": ["pnpm", "--filter", "site", "dev", "--port", "4321"],
+      "runtimeArgs": ["pnpm", "--filter", "site", "dev", "--port", "4321", "--force"],
       "port": 4321
     }
   ]
