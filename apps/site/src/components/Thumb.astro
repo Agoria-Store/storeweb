@@ -1,20 +1,17 @@
 ---
 import type { Product } from '@course-store/store-client';
+import Illustration from './Illustration.astro';
+import type { Art } from '../lib/art';
 interface Props {
   product: Product;
+  art: Art;
+  number?: number;
   eager?: boolean;
 }
-const { product: p, eager = false } = Astro.props;
-const palettes = [
-  ['#5b3df5', '#ff7ac6', '#ffd23f'],
-  ['#0e8f63', '#5eead4', '#5b3df5'],
-  ['#ff7ac6', '#ffd23f', '#5eead4'],
-];
-const seed = [...p.id].reduce((a, c) => a + c.charCodeAt(0), 0);
-const [a, b, c] = palettes[seed % palettes.length]!;
+const { product: p, art, number, eager = false } = Astro.props;
 ---
 
-<div class="thumb" style={`--a:${a};--b:${b};--c:${c}`}>
+<div class="thumb">
   {
     p.thumbnailUrl ? (
       <img
@@ -26,9 +23,7 @@ const [a, b, c] = palettes[seed % palettes.length]!;
         decoding="async"
       />
     ) : (
-      <span class="ph" aria-hidden="true">
-        [Thumbnail]
-      </span>
+      <Illustration art={art} number={number} />
     )
   }
   {
@@ -52,9 +47,6 @@ const [a, b, c] = palettes[seed % palettes.length]!;
     aspect-ratio: 16 / 10;
     overflow: hidden;
     border-radius: 12px;
-    background:
-      radial-gradient(70% 90% at 20% 15%, var(--b), transparent 65%),
-      radial-gradient(60% 80% at 90% 90%, var(--c), transparent 60%), var(--a);
   }
   img,
   video {
@@ -71,14 +63,6 @@ const [a, b, c] = palettes[seed % palettes.length]!;
   :global(.is-previewing) video {
     opacity: 1;
   }
-  .ph {
-    position: absolute;
-    right: 12px;
-    bottom: 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: rgb(255 255 255 / 0.85);
-  }
   .play {
     position: absolute;
     left: 10px;
@@ -86,8 +70,8 @@ const [a, b, c] = palettes[seed % palettes.length]!;
     z-index: 2;
     display: grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border: 0;
     border-radius: 50%;
     background: #fff;

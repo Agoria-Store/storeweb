@@ -5,9 +5,13 @@ import { withSavings, TYPE_LABEL } from '../lib/catalog';
 import CourseCard from './CourseCard.astro';
 
 const s = await store();
-const products = await Promise.all((await s.listProducts()).map(withSavings));
-const types = [...new Set(products.map((p) => p.type))] as ProductType[];
-const DEFAULT = types.includes('course') ? 'course' : 'all';
+// Whole products first, then their parts, so "All" leads with the best deals.
+const rank = (t: ProductType) => (t === 'course' ? 0 : t === 'bundle' ? 1 : 2);
+const products = (await Promise.all((await s.listProducts()).map(withSavings))).sort(
+  (a, b) => rank(a.type) - rank(b.type) || a.sortOrder - b.sortOrder,
+);
+const types = [...new Set(products.map((p) => p.type))].sort((a, b) => rank(a) - rank(b));
+const DEFAULT = 'all';
 ---
 
 <section id="courses" class="section" aria-labelledby="courses-title">
@@ -86,7 +90,7 @@ const DEFAULT = types.includes('course') ? 'course' : 'all';
     padding: 0;
     display: grid;
     gap: 20px;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   }
   .grid :global([data-card][hidden]) {
     display: none;

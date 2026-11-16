@@ -1,37 +1,43 @@
 # Design
 
-A light, modern storefront at the craft level of Stripe and Gumroad / Lemon Squeezy. Tokens live in `apps/site/src/styles/global.css`.
+A calm, light storefront built around one hero object: a glossy 3D USDT coin. Craft bar: Apple product pages, Stripe, Gumroad / Lemon Squeezy. Tokens live in `apps/site/src/styles/global.css`.
 
 ## Color
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--bg` | #F7F8FB | Page background |
-| `--surface` | #FFFFFF | Cards, nav after scroll |
+| `--bg` | #FBFBFD | Page background, nav |
+| `--surface` | #FFFFFF | Cards |
 | `--surface-2` | #F0F2F7 | Inset panels, filter track |
-| `--ink` | #121826 | Text, dark buttons, footer CTA |
-| `--muted` | #4A5468 | Secondary text (7.6:1 on bg) |
-| `--line` | #E3E6EE | Dividers, outlines |
+| `--ink` | #121826 | Text, dark CTA card |
+| `--muted` | #4A5468 | Secondary text |
+| `--line` | #E3E6EE | Dividers |
 | `--primary` | #5B3DF5 | Primary buttons, active states, focus ring |
-| `--primary-soft` | #EEEAFF | Tints behind primary icons/numbers |
-| `--money` | #08734F | USDT prices (5.3:1 or better on every surface) |
+| `--primary-soft` | #EEEAFF | Tints behind primary numbers/icons |
+| `--money` | #08734F | USDT prices |
+| `--tether` | #26A17B | The coin, the USDT dot |
 | `--sun` | #FFD23F | "Save X%" badges only |
-
-Hero gradient colours (three.js shader and CSS fallback): #5B3DF5, #FF7AC6, #FFD23F, #5EEAD4.
+| `--tg` / `--tg-soft` | #1D8FD1 / #E3F3FC | Telegram delivery only |
 
 ## Type
 
-Geist Variable for everything. Headings weight 650, tracking -0.035em, `text-wrap: balance`. Body 17px / 1.6.
+Geist Variable throughout. Hero h1 weight 600, tracking -0.045em, line-height 1. h2 650 / -0.035em. h3 line-height 1.15.
+
+## Illustrations
+
+`Illustration.astro` draws every product thumbnail as SVG geometry (no picture-style drawings):
+- Courses cycle through scenes: `candles` (candlestick chart + trend), `network` (coin with orbiting nodes), `wave` (layered curves).
+- Bundles: `layers` (stacked isometric slabs).
+- Chapters/videos: quiet grey tile with a large number and a small motif from the parent course's scene.
+A real `thumbnailUrl` always replaces the illustration.
 
 ## Components
 
-- Cards: white, 16px radius, one soft shadow (`--shadow`); hover lifts 4px to `--shadow-lg`.
-- Buttons: pill. Primary = violet fill; Secondary = white with border; Dark = ink fill.
-- Prices always `.price` (green, tabular numerals) with "USDT" after the number.
-- Savings always a yellow `.badge-save` pill, computed from catalog data.
+- Cards: white, 16px radius, one soft shadow; hover lifts 4px. Footer row shows delivery and "View course" in primary.
+- Buttons: pill. Primary violet, Secondary white with border, `.small` for inline actions.
+- Prices `.price` in green with "USDT"; savings in a yellow `.badge-save`, always computed from catalog data.
 
 ## Motion
 
-- Hero: three.js flowing gradient band (skewed), loaded 1.5 s after page load, rendered at half resolution, paused offscreen. CSS gradient fallback for reduced motion, slow data or no WebGL.
-- Hero checkout card rises in once (transform only, so it never delays LCP).
-- Pinned four-step payment section on desktop (GSAP ScrollTrigger); Lenis smooth scroll. Both off under reduced motion.
+- Hero: SVG coin renders immediately. The three.js coin (`scripts/coin-gl.ts`) loads on the visitor's first move or after 6 s, spins slowly, tilts with the pointer and turns with scroll. Skipped with reduced motion, slow data or no WebGL2.
+- Desktop only (fine pointer): Lenis smooth scroll and the pinned four-step payment section. Below 900px, or without JS, the four steps show as a plain stacked list.

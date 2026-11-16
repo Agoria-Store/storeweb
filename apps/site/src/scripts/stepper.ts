@@ -1,27 +1,29 @@
 import { prefersReducedMotion } from './env';
+import type { Motion } from './motion';
 
-type Motion = {
-  gsap: typeof import('gsap').gsap;
-  ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger;
-};
-
+/**
+ * Without JS, or below 900px, every step is shown as a plain list.
+ * At 900px+ the steps become tabs; with motion on, scroll position drives them while pinned.
+ */
 export function initStepper() {
   const root = document.querySelector<HTMLElement>('[data-stepper]');
   if (!root) return;
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
   const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+  const wide = matchMedia('(min-width: 900px)');
   let current = 0;
+  let scrollToStep: ((i: number) => void) | undefined;
 
-  const select = (i: number, focus = false) => {
-    if (i === current && !focus) return;
-    current = i;
+  const render = (animate: boolean) => {
+    const tabbed = wide.matches;
+    root.classList.toggle('is-tabbed', tabbed);
     tabs.forEach((t, j) => {
-      t.setAttribute('aria-selected', String(j === i));
-      t.tabIndex = j === i ? 0 : -1;
+      t.setAttribute('aria-selected', String(j === current));
+      t.tabIndex = j === current ? 0 : -1;
     });
     panels.forEach((p, j) => {
-      p.hidden = j !== i;
-      if (j === i && !prefersReducedMotion()) {
+      p.hidden = tabbed && j !== current;
+      if (tabbed && animate && j === current && !prefersReducedMotion()) {
         p.animate(
           [
             { opacity: 0, transform: 'translateY(14px)' },
@@ -31,8 +33,14 @@ export function initStepper() {
         );
       }
     });
-    if (focus) tabs[i]?.focus();
   };
+  const select = (i: number, animate = true) => {
+    if (i === current) return;
+    current = i;
+    render(animate);
+  };
+  render(false);
+  wide.addEventListener('change', () => render(false));
 
   tabs.forEach((t, i) => {
     t.addEventListener('click', () => {
@@ -48,39 +56,25 @@ export function initStepper() {
         Home: 0,
         End: tabs.length - 1,
       };
-      const next = keys[e.key];
-      if (next === undefined) return;
+      const raw = keys[e.key];
+      if (raw === undefined) return;
       e.preventDefault();
-      select((next + tabs.length) % tabs.length, true);
+      const next = (raw + tabs.length) % tabs.length;
+      select(next);
+      scrollToStep?.(next);
+      tabs[next]?.focus();
     });
   });
 
-  const status = root.querySelector('[data-copy-status]');
-  root.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
-    b.addEventListener('click', async () => {
-      const label = b.querySelector('[data-copy-label]');
-      try {
-        await navigator.clipboard.writeText(b.dataset.copy!);
-        if (label) label.textContent = 'Copied';
-        if (status) status.textContent = 'Amount copied';
-      } catch {
-        if (label) label.textContent = 'Copy not available';
-      }
-      setTimeout(() => label && (label.textContent = 'Try copying an example amount'), 1800);
-    }),
-  );
-
-  // Pinned scroll sequence: desktop + motion only.
-  let scrollToStep: ((i: number) => void) | undefined;
-  const pin = ({ gsap, ScrollTrigger }: Motion) => {
-    const mm = gsap.matchMedia();
-    mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-      const perStep = window.innerHeight * 0.6;
+  const pin = ({ gsap, ScrollTrigger, lenis }: Motion) => {
+    gsap.matchMedia().add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+      const perStep = () => window.innerHeight * 0.6;
       const st = ScrollTrigger.create({
         trigger: root,
         pin: root.querySelector('[data-stepper-pin]'),
         start: 'top top',
-        end: `+=${perStep * tabs.length}`,
+        end: () => `+=${perStep() * tabs.length}`,
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           const pos = self.progress * tabs.length;
           const i = Math.min(tabs.length - 1, Math.floor(pos));
@@ -90,7 +84,7 @@ export function initStepper() {
           select(i);
         },
       });
-      scrollToStep = (i) => window.scrollTo({ top: st.start + perStep * (i + 0.5) });
+      scrollToStep = (i) => lenis.scrollTo(st.start + perStep() * (i + 0.5));
       return () => {
         scrollToStep = undefined;
         tabs.forEach((t) => t.style.removeProperty('--p'));

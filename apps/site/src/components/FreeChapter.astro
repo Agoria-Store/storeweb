@@ -5,6 +5,7 @@ import { productHref } from '../lib/catalog';
 // Set when the free-chapter video exists under /public/media.
 const freeVideo = null as null | { src: string; poster: string; captions?: string };
 const course = (await (await store()).listProducts({ type: 'course' }))[0];
+const courseHref = course ? await productHref(course) : '#courses';
 ---
 
 <section id="free-chapter" class="section" aria-labelledby="free-title">
@@ -14,7 +15,7 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
       <p class="lede">[What the free chapter covers, in one or two plain sentences.]</p>
       {
         course && (
-          <a class="btn btn-secondary" href={productHref(course)}>
+          <a class="btn btn-secondary" href={courseHref}>
             See all chapters of {course.title}
           </a>
         )

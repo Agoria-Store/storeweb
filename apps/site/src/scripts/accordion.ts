@@ -1,29 +1,27 @@
 import { prefersReducedMotion } from './env';
 
-/** Animates native <details> open/close; behaviour stays native without JS or with reduced motion. */
+/** Animates native <details>; a #hash opens its matching item. Behaviour stays native without JS. */
 export function initAccordion(root: ParentNode = document) {
-  const open = (d: HTMLDetailsElement) => {
-    d.open = true;
-    const panel = d.querySelector<HTMLElement>('.panel');
-    panel?.animate(
-      [
-        { opacity: 0, transform: 'translateY(-6px)' },
-        { opacity: 1, transform: 'none' },
-      ],
-      { duration: 320, easing: 'cubic-bezier(.2,.7,.2,1)' },
-    );
-  };
-
-  const target =
-    location.hash && root.querySelector<HTMLDetailsElement>(`details${CSS.escape(location.hash)}`);
-  if (target) target.open = true;
+  const id = location.hash.slice(1);
+  const target = id ? root.querySelector<HTMLDetailsElement>(`details#${CSS.escape(id)}`) : null;
+  if (target) {
+    root.querySelectorAll<HTMLDetailsElement>('details[open]').forEach((d) => (d.open = false));
+    target.open = true;
+  }
 
   if (prefersReducedMotion()) return;
   root.querySelectorAll<HTMLDetailsElement>('details').forEach((d) => {
     d.querySelector('summary')?.addEventListener('click', (e) => {
       if (d.open) return;
       e.preventDefault();
-      open(d);
+      d.open = true;
+      d.querySelector<HTMLElement>('.panel')?.animate(
+        [
+          { opacity: 0, transform: 'translateY(-6px)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 320, easing: 'cubic-bezier(.2,.7,.2,1)' },
+      );
     });
   });
 }

@@ -1,297 +1,163 @@
 ---
 import { formatUsdt } from '@course-store/store-client';
 import { store } from '../lib/store';
-import { withSavings, partsOf, productHref } from '../lib/catalog';
+import CoinArt from './CoinArt.astro';
 
-const s = await store();
-const first = (await s.listProducts({ type: 'course' }))[0];
-const course = first ? await withSavings(first) : undefined;
-const chapters = first ? await partsOf(first) : [];
+const courses = await (await store()).listProducts({ type: 'course' });
+const from = Math.min(...courses.map((c) => c.priceUsdt));
 ---
 
-<section class="hero" aria-labelledby="hero-title">
-  <div class="band" aria-hidden="true" data-band></div>
-
-  <div class="wrap grid">
-    <div class="copy">
-      <p class="tag"><span class="dot"></span>Pay with USDT on TRC20</p>
-      <h1 id="hero-title">[Headline about the outcome for the learner]</h1>
-      <p class="value">
-        [Value line: who the courses are for and what they will be able to do.] Buy the full course,
-        one chapter, or a single video.
-      </p>
-      <div class="ctas">
-        <a class="btn btn-primary" href="#courses">Browse courses</a>
-        <a class="btn btn-secondary" href="#free-chapter">Get a free chapter</a>
-      </div>
+<section class="hero" aria-labelledby="hero-title" data-hero>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap copy">
+    <p class="tag"><span class="dot"></span>Paid in USDT on TRC20</p>
+    <h1 id="hero-title">[Headline about the outcome for the learner]</h1>
+    <p class="value">
+      [Value line: who the courses are for and what they will be able to do.] Buy the full course,
+      one chapter, or a single video.
+    </p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="#courses">Browse courses</a>
+      <a class="btn btn-secondary" href="#free-chapter">Watch a free chapter</a>
     </div>
+    <p class="from">Full courses from <span class="price">{formatUsdt(from)}</span></p>
+  </div>
 
-    {
-      course && (
-        <aside class="preview card" aria-label={`Example: buying ${course.title}`}>
-          <div class="pv-head">
-            <span class="thumb" aria-hidden="true" />
-            <div>
-              <p class="pv-kind">Course, {chapters.length} chapters</p>
-              <p class="pv-title">
-                <a href={productHref(course)}>{course.title}</a>
-              </p>
-            </div>
-          </div>
-          <ul class="pv-list">
-            {chapters.map((c) => (
-              <li>
-                <span>{c.title}</span>
-                <span class="price">{formatUsdt(c.priceUsdt)}</span>
-              </li>
-            ))}
-          </ul>
-          <div class="pv-total">
-            <div>
-              <p class="pv-label">Full course</p>
-              <p class="pv-price price">{formatUsdt(course.priceUsdt)}</p>
-            </div>
-            {course.savings > 0 && <span class="badge-save">Save {course.savings}%</span>}
-          </div>
-          <a class="btn btn-primary pv-buy" href={course.checkoutUrl} rel="noopener">
-            Buy full course
-          </a>
-          <p class="pv-foot">
-            <svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true">
-              <circle cx="16" cy="16" r="16" fill="#26a17b" />
-              <path d="M9 8h14v4h-5v13h-4V12H9z" fill="#fff" />
-              <ellipse
-                cx="16"
-                cy="15.5"
-                rx="7"
-                ry="2"
-                fill="none"
-                stroke="#fff"
-                stroke-width="1.6"
-              />
-            </svg>
-            Checkout shows the exact USDT amount and TRC20 address.
-          </p>
-        </aside>
-      )
-    }
+  <div class="stage" data-coin>
+    <CoinArt />
+    <span class="shadow" aria-hidden="true"></span>
   </div>
 </section>
 
 <script>
   import { richMotionAllowed } from '../scripts/env';
-  const band = document.querySelector<HTMLElement>('[data-band]');
-  if (band && richMotionAllowed()) {
-    const go = () =>
-      import('../scripts/gradient-gl').then(({ mountGradient }) => mountGradient(band));
-    // Start after load settles so shader compile never competes with first paint or input.
-    const later = () =>
-      setTimeout(() => {
-        if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 2000 });
-        else go();
-      }, 1500);
-    if (document.readyState === 'complete') later();
-    else addEventListener('load', later, { once: true });
+
+  const stage = document.querySelector<HTMLElement>('[data-coin]');
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const hasWebGL = () => {
+    try {
+      return !!document.createElement('canvas').getContext('webgl2');
+    } catch {
+      return false;
+    }
+  };
+  if (stage && hero && richMotionAllowed() && hasWebGL()) {
+    // Shader compile is a long task, so it waits for the visitor's first move (or a quiet 6 s),
+    // never competing with first paint. The SVG coin covers the gap.
+    const events = ['pointermove', 'pointerdown', 'scroll', 'keydown', 'touchstart'] as const;
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      events.forEach((e) => removeEventListener(e, go));
+      import('../scripts/coin-gl').then(({ mountCoin }) => mountCoin(stage, hero));
+    };
+    const arm = () => {
+      events.forEach((e) => addEventListener(e, go, { once: true, passive: true }));
+      setTimeout(go, 6000);
+    };
+    if (document.readyState === 'complete') arm();
+    else addEventListener('load', arm, { once: true });
   }
 </script>
 
 <style>
   .hero {
     position: relative;
-    padding: 56px 0 96px;
+    padding: clamp(40px, 6vw, 72px) 0 clamp(24px, 4vw, 48px);
+    overflow: clip;
     isolation: isolate;
+    text-align: center;
   }
-  .band {
+  .glow {
     position: absolute;
-    inset: 0 0 auto;
-    height: 640px;
+    inset: -10% -20% auto;
+    height: 120%;
     z-index: -1;
-    overflow: hidden;
-    transform: skewY(-6deg);
-    transform-origin: top left;
     background:
-      radial-gradient(60% 80% at 85% 20%, #ff7ac6, transparent 60%),
-      radial-gradient(50% 70% at 100% 80%, #ffd23f, transparent 60%),
-      radial-gradient(60% 90% at 60% 0%, #5eead4, transparent 60%), #5b3df5;
-  }
-  .band :global(canvas) {
-    position: absolute;
-    inset: 0;
-    width: 100% !important;
-    height: 100% !important;
-    animation: fade 1.2s var(--ease) both;
-  }
-  /* Keeps the copy side light so ink text holds contrast over the moving colour. */
-  .band::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(100deg, var(--bg) 0%, var(--bg) 34%, rgb(247 248 251 / 0) 62%);
-  }
-  .grid {
-    display: grid;
-    gap: 48px;
-    align-items: center;
+      radial-gradient(40% 35% at 50% 72%, rgb(38 161 123 / 0.22), transparent 70%),
+      radial-gradient(35% 30% at 25% 30%, rgb(91 61 245 / 0.12), transparent 70%),
+      radial-gradient(30% 30% at 78% 35%, rgb(255 122 198 / 0.12), transparent 70%);
   }
   .copy {
     display: grid;
-    justify-items: start;
+    justify-items: center;
   }
   .tag {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 12px 6px 10px;
+    padding: 6px 14px 6px 10px;
     border-radius: 999px;
     background: var(--surface);
-    box-shadow: var(--shadow);
-    font-size: 0.875rem;
-    font-weight: 600;
+    border: 1px solid var(--line);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--muted);
   }
   .dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #26a17b;
+    background: var(--tether);
     box-shadow: 0 0 0 3px rgb(38 161 123 / 0.2);
   }
   h1 {
-    margin-top: 24px;
-    font-size: clamp(2.7rem, 7.5vw, 4.75rem);
+    margin-top: 28px;
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1;
     max-width: 14ch;
   }
   .value {
-    margin-top: 20px;
+    margin-top: 24px;
     max-width: 46ch;
-    font-size: 1.2rem;
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
     color: var(--muted);
   }
   .ctas {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 12px;
     margin-top: 32px;
   }
-  .preview {
-    width: min(100%, 420px);
-    justify-self: center;
-    padding: 24px;
-    box-shadow: var(--shadow-lg);
-    animation: rise 0.9s 0.15s var(--ease) both;
-  }
-  .pv-head {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-  }
-  .thumb {
-    flex: none;
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #5b3df5, #ff7ac6 70%, #ffd23f);
-  }
-  .pv-kind {
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
-  .pv-title {
-    font-weight: 650;
-    font-size: 1.1rem;
-    letter-spacing: -0.01em;
-  }
-  .pv-title a {
-    text-decoration: none;
-  }
-  .pv-title a:hover {
-    text-decoration: underline;
-  }
-  .pv-list {
-    list-style: none;
-    margin: 20px 0 0;
-    padding: 0;
+  .from {
+    margin-top: 20px;
     font-size: 0.95rem;
-  }
-  .pv-list li {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 0;
-    border-top: 1px solid var(--line);
-  }
-  .pv-list li span:first-child {
     color: var(--muted);
   }
-  .pv-total {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    padding: 16px;
-    border-radius: var(--radius-sm);
-    background: var(--surface-2);
+  .stage {
+    position: relative;
+    width: min(64vw, 340px);
+    aspect-ratio: 1;
+    margin: clamp(16px, 3vw, 28px) auto 0;
   }
-  .pv-label {
-    font-size: 0.85rem;
-    color: var(--muted);
+  .stage :global(canvas) {
+    position: absolute;
+    inset: -15%;
+    width: 130% !important;
+    height: 130% !important;
+    animation: appear 0.6s var(--ease) both;
   }
-  .pv-price {
-    font-size: 1.6rem;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+  .stage[data-live] :global(.coin-svg) {
+    opacity: 0;
+    transition: opacity 0.4s;
   }
-  .pv-buy {
-    width: 100%;
-    margin-top: 16px;
+  .shadow {
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: -6%;
+    height: 10%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(19 107 80 / 0.28), transparent);
   }
-  .pv-foot {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-top: 14px;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-  @keyframes rise {
-    from {
-      transform: translateY(24px) scale(0.98);
-    }
-  }
-  @keyframes fade {
+  @keyframes appear {
     from {
       opacity: 0;
-    }
-  }
-  @media (min-width: 960px) {
-    .grid {
-      grid-template-columns: 1.25fr 1fr;
-      min-height: 560px;
-    }
-    .preview {
-      justify-self: end;
-      transform: rotate(1.5deg);
-      animation-name: rise-tilt;
-    }
-    @keyframes rise-tilt {
-      from {
-        transform: translateY(24px) rotate(1.5deg);
-      }
-      to {
-        transform: rotate(1.5deg);
-      }
-    }
-  }
-  @media (max-width: 959px) {
-    .band {
-      height: 420px;
-    }
-    .band::after {
-      background: linear-gradient(
-        180deg,
-        rgb(247 248 251 / 0.85) 0%,
-        rgb(247 248 251 / 0.6) 60%,
-        var(--bg)
-      );
     }
   }
 </style>

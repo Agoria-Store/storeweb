@@ -26,8 +26,11 @@ export async function withSavings(p: Product): Promise<Listed> {
 /** Products that get their own detail page (anything that has parts). */
 export const hasDetailPage = (p: Product) => !p.parentId;
 
-export function productHref(p: Product): string {
-  return p.parentId ? `/p/${p.parentId}/#${p.slug}` : `/p/${p.slug}/`;
+/** Pages are routed by slug, so a child links to its parent's slug, never its id. */
+export async function productHref(p: Product): Promise<string> {
+  if (!p.parentId) return `/p/${p.slug}/`;
+  const parent = await (await store()).getProduct(p.parentId);
+  return `/p/${parent?.slug ?? p.parentId}/#${p.slug}`;
 }
 
 export const TYPE_LABEL: Record<Product['type'], string> = {

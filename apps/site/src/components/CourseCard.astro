@@ -1,30 +1,38 @@
 ---
 import { formatUsdt } from '@course-store/store-client';
 import { productHref, TYPE_LABEL, type Listed } from '../lib/catalog';
+import { artFor } from '../lib/art';
 import Thumb from './Thumb.astro';
 
 interface Props {
   product: Listed;
+  hidden?: boolean;
 }
-const { product: p } = Astro.props;
+const { product: p, hidden = false } = Astro.props;
+const href = await productHref(p);
+const { art, number } = await artFor(p);
 const unit = p.type === 'bundle' ? 'products' : 'chapters';
 const kind = [TYPE_LABEL[p.type], p.childCount > 0 ? `${p.childCount} ${unit}` : null]
   .filter(Boolean)
   .join(' · ');
 const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'Download';
+const cta = p.parentId ? 'View in course' : p.type === 'bundle' ? 'View bundle' : 'View course';
 ---
 
-<li class="item card" data-card data-type={p.type}>
-  <Thumb product={p} />
+<li class="item card" data-card data-type={p.type} hidden={hidden}>
+  <Thumb product={p} art={art} number={number} />
   <div class="body">
     <p class="kind">{kind}</p>
-    <h3><a href={productHref(p)} class="stretched">{p.title}</a></h3>
+    <h3><a href={href} class="stretched">{p.title}</a></h3>
     <p class="desc">{p.description}</p>
     <div class="foot">
       <span class="price amount">{formatUsdt(p.priceUsdt)}</span>
       {p.savings > 0 && <span class="badge-save">Save {p.savings}%</span>}
     </div>
-    <p class="delivery">{delivery}</p>
+    <p class="meta">
+      <span>{delivery}</span>
+      <span class="go" aria-hidden="true">{cta}</span>
+    </p>
   </div>
 </li>
 
@@ -33,10 +41,10 @@ const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'Downl
     position: relative;
     display: grid;
     grid-template-rows: auto 1fr;
-    padding: 10px;
+    padding: 8px;
     transition:
-      transform 0.35s var(--ease),
-      box-shadow 0.35s var(--ease);
+      transform 0.45s var(--ease),
+      box-shadow 0.45s var(--ease);
   }
   .item:hover,
   .item:focus-within {
@@ -47,15 +55,14 @@ const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'Downl
     display: grid;
     gap: 8px;
     align-content: start;
-    padding: 16px 10px 10px;
+    padding: 16px 12px 12px;
   }
   .kind {
     font-size: 0.85rem;
     color: var(--muted);
   }
   h3 {
-    font-size: 1.35rem;
-    letter-spacing: -0.025em;
+    font-size: 1.3rem;
   }
   .stretched {
     text-decoration: none;
@@ -79,8 +86,20 @@ const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'Downl
   .amount {
     font-size: 1.25rem;
   }
-  .delivery {
-    font-size: 0.8rem;
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 0.85rem;
     color: var(--muted);
+  }
+  .go {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .item:hover .go {
+    text-decoration: underline;
   }
 </style>

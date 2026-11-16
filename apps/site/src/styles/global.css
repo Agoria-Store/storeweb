@@ -1,5 +1,5 @@
 :root {
-  --bg: #f7f8fb;
+  --bg: #fbfbfd;
   --surface: #ffffff;
   --surface-2: #f0f2f7;
   --ink: #121826;
@@ -10,6 +10,9 @@
   --primary-soft: #eeeaff;
   --money: #08734f; /* 5.9:1 on white, 5.3:1 on --surface-2 */
   --sun: #ffd23f;
+  --tg: #1d8fd1;
+  --tg-soft: #e3f3fc;
+  --tether: #26a17b;
 
   --font: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --radius: 16px;
@@ -40,7 +43,7 @@ body {
   font: 400 1.0625rem/1.6 var(--font);
   font-feature-settings: 'ss01';
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 ::selection {
   background: var(--primary);
@@ -54,6 +57,10 @@ h3 {
   letter-spacing: -0.035em;
   margin: 0;
   text-wrap: balance;
+}
+h3 {
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 p {
   margin: 0;
@@ -111,6 +118,9 @@ svg {
   position: absolute;
   width: 1px;
   height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
@@ -155,6 +165,11 @@ svg {
 }
 .btn-secondary:hover {
   border-color: #c9cede;
+}
+.btn.small {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 0.875rem;
 }
 .btn-dark {
   background: var(--ink);

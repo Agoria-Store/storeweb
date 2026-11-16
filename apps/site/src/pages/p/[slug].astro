@@ -3,7 +3,8 @@ import type { GetStaticPaths } from 'astro';
 import { formatUsdt, type Product } from '@course-store/store-client';
 import Base from '../../layouts/Base.astro';
 import Thumb from '../../components/Thumb.astro';
-import { store } from '../../lib/store';
+import { store, BRAND } from '../../lib/store';
+import { artFor } from '../../lib/art';
 import { hasDetailPage, partsOf, withSavings, TYPE_LABEL, productHref } from '../../lib/catalog';
 
 export const getStaticPaths = (async () => {
@@ -21,6 +22,8 @@ const nested = await Promise.all(parts.map((c) => s.listProducts({ parentId: c.i
 const isBundle = p.type === 'bundle';
 const whole = isBundle ? 'bundle' : 'full course';
 const partName = isBundle ? 'product' : 'chapter';
+const partHrefs = await Promise.all(parts.map((c) => productHref(c)));
+const { art } = await artFor(product);
 const saved = Math.round((p.partsTotal - p.priceUsdt) * 100) / 100;
 const delivery =
   p.delivery === 'telegram_channel'
@@ -28,13 +31,13 @@ const delivery =
     : 'Expiring download link';
 ---
 
-<Base title={`${p.title}: [BRAND NAME]`} description={p.description}>
+<Base title={`${p.title}: ${BRAND}`} description={p.description}>
   <div class="wrap page">
     <a class="back" href="/#courses">All courses</a>
 
     <div class="layout">
       <div class="main">
-        <Thumb product={p} eager />
+        <Thumb product={p} art={art} eager />
         <p class="kind">
           {TYPE_LABEL[p.type]}{parts.length > 0 && `, ${parts.length} ${partName}s`}
         </p>
@@ -45,7 +48,7 @@ const delivery =
         <div class="accordion card">
           {
             parts.map((c, i) => (
-              <details id={c.slug} class="item" open={i === 0}>
+              <details id={c.slug} class="item">
                 <summary>
                   <span class="n">{i + 1}</span>
                   <span class="t">{c.title}</span>
@@ -61,7 +64,7 @@ const delivery =
                       {nested[i]!.map((v) => (
                         <li>
                           <span>{v.title}</span>
-                          <a href={v.checkoutUrl} rel="noopener">
+                          <a class="btn btn-secondary small" href={v.checkoutUrl}>
                             Buy video, {formatUsdt(v.priceUsdt)}
                           </a>
                         </li>
@@ -69,11 +72,11 @@ const delivery =
                     </ul>
                   )}
                   {isBundle ? (
-                    <a class="btn btn-secondary" href={productHref(c)}>
+                    <a class="btn btn-secondary" href={partHrefs[i]}>
                       View course
                     </a>
                   ) : (
-                    <a class="btn btn-secondary" href={c.checkoutUrl} rel="noopener">
+                    <a class="btn btn-secondary" href={c.checkoutUrl}>
                       Buy this chapter, {formatUsdt(c.priceUsdt)}
                     </a>
                   )}
@@ -95,7 +98,7 @@ const delivery =
             </p>
           )
         }
-        <a class="btn btn-primary wide" href={p.checkoutUrl} rel="noopener">Buy {whole}</a>
+        <a class="btn btn-primary wide" href={p.checkoutUrl}>Buy {whole}</a>
         <ul class="facts">
           <li>Pay with USDT on TRC20</li>
           <li>{delivery}</li>

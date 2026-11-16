@@ -55,7 +55,6 @@ const steps = [
               aria-labelledby={`pay-tab-${i}`}
               class="panel"
               data-panel
-              hidden={i !== 0}
             >
               <div class="screen" aria-hidden="true">
                 {i === 0 && (
@@ -96,15 +95,9 @@ const steps = [
                 {s.title}
               </h3>
               <p>{s.body}</p>
-              {i === 1 && (
-                <button class="btn btn-secondary" type="button" data-copy="[PRICE]">
-                  <span data-copy-label>Try copying an example amount</span>
-                </button>
-              )}
             </div>
           ))
         }
-        <p class="sr-only" aria-live="polite" data-copy-status></p>
       </div>
     </div>
   </div>
@@ -202,6 +195,14 @@ const steps = [
     display: grid;
     gap: 12px;
     justify-items: start;
+  }
+  .pay:not(.is-tabbed) .tabs {
+    display: none;
+  }
+  .pay:not(.is-tabbed) .panel + .panel {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
   }
   .panel[hidden] {
     display: none;
@@ -302,7 +303,7 @@ const steps = [
       align-items: center;
     }
     .pin {
-      min-height: 100vh;
+      min-height: 100svh;
       display: grid;
       align-items: center;
     }
