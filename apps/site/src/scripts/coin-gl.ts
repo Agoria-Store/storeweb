@@ -14,7 +14,6 @@ import {
   RepeatWrapping,
   Scene,
   Shape,
-  SRGBColorSpace,
   Vector2,
   WebGLRenderer,
 } from 'three';
@@ -26,23 +25,15 @@ const FACE_Z = 0.085;
 
 /** Engraving for the coin face, drawn once on a canvas and used as bump + roughness detail. */
 function faceTexture(): CanvasTexture {
-  const size = 1024;
+  // Drawn in 1024-unit space onto a 2048 canvas so engraving edges stay crisp up close.
+  const size = 2048;
   const c = document.createElement('canvas');
   c.width = c.height = size;
   const g = c.getContext('2d')!;
-  const mid = size / 2;
   g.fillStyle = '#7a7a7a';
   g.fillRect(0, 0, size, size);
-  g.translate(mid, mid);
-
-  // Fine concentric turning marks across the field.
-  g.strokeStyle = 'rgba(255,255,255,0.08)';
-  g.lineWidth = 1;
-  for (let r = 6; r < 500; r += 5) {
-    g.beginPath();
-    g.arc(0, 0, r, 0, Math.PI * 2);
-    g.stroke();
-  }
+  g.translate(size / 2, size / 2);
+  g.scale(2, 2);
 
   // Raised rings framing the inscription.
   g.strokeStyle = '#fff';
@@ -193,7 +184,7 @@ export function mountCoin(host: HTMLElement, scrollArea: HTMLElement): boolean {
   } catch {
     return false;
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
   renderer.setClearColor(0x000000, 0);
@@ -209,24 +200,25 @@ export function mountCoin(host: HTMLElement, scrollArea: HTMLElement): boolean {
   rim.position.set(-4, -1, -2);
   scene.add(key, rim);
 
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
   const engraving = faceTexture();
-  engraving.colorSpace = SRGBColorSpace;
+  engraving.anisotropy = maxAniso;
   const face = new MeshStandardMaterial({
     color: GOLD,
     metalness: 1,
-    roughness: 0.34,
+    roughness: 0.3,
     bumpMap: engraving,
-    bumpScale: 2.2,
-    roughnessMap: engraving,
+    bumpScale: 1,
   });
   const polished = new MeshStandardMaterial({ color: 0xffd47e, metalness: 1, roughness: 0.1 });
   const reeds = edgeTexture();
+  reeds.anisotropy = maxAniso;
   const edge = new MeshStandardMaterial({
     color: 0xd9962c,
     metalness: 1,
     roughness: 0.3,
     bumpMap: reeds,
-    bumpScale: 1.5,
+    bumpScale: 0.8,
   });
 
   const coin = new Group();
@@ -256,20 +248,26 @@ export function mountCoin(host: HTMLElement, scrollArea: HTMLElement): boolean {
   const camera = new PerspectiveCamera(28, 1, 0.1, 50);
   camera.position.set(0, 0, 5.4);
 
+  // Size the drawing buffer to the canvas as displayed (CSS makes it larger than host),
+  // otherwise the browser upscales the image and it blurs.
+  const canvas = renderer.domElement;
   const resize = () => {
-    const w = host.clientWidth;
-    const h = host.clientHeight;
+    const w = canvas.clientWidth || host.clientWidth;
+    const h = canvas.clientHeight || host.clientHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / Math.max(h, 1);
     camera.updateProjectionMatrix();
   };
   resize();
-  new ResizeObserver(resize).observe(host);
+  new ResizeObserver(resize).observe(canvas);
 
+  // Pointer offset from the coin's own centre, -1..1, so the coin turns to look at the cursor.
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+  const clamp = (v: number) => Math.max(-1, Math.min(1, v));
   scrollArea.addEventListener('pointermove', (e) => {
-    pointer.tx = (e.clientX / window.innerWidth - 0.5) * 2;
-    pointer.ty = (e.clientY / window.innerHeight - 0.5) * 2;
+    const b = host.getBoundingClientRect();
+    pointer.tx = clamp((e.clientX - (b.left + b.width / 2)) / (window.innerWidth / 2));
+    pointer.ty = clamp((e.clientY - (b.top + b.height / 2)) / (window.innerHeight / 2));
   });
   scrollArea.addEventListener('pointerleave', () => {
     pointer.tx = 0;
@@ -283,19 +281,19 @@ export function mountCoin(host: HTMLElement, scrollArea: HTMLElement): boolean {
     const r = scrollArea.getBoundingClientRect();
     const target = Math.min(Math.max(-r.top / Math.max(r.height, 1), 0), 1);
     scroll += (target - scroll) * 0.12;
-    pointer.x += (pointer.tx - pointer.x) * 0.06;
-    pointer.y += (pointer.ty - pointer.y) * 0.06;
+    pointer.x += (pointer.tx - pointer.x) * 0.045;
+    pointer.y += (pointer.ty - pointer.y) * 0.045;
 
-    // Sway, never spin: the face stays readable; scrolling out of the hero turns it once.
+    // A slow float plus a small tilt toward the cursor; scrolling out of the hero turns it once.
     const intro = 1 - Math.pow(1 - Math.min(t / 1.6, 1), 4);
     coin.rotation.y =
-      -0.35 +
-      Math.sin(t * 0.7) * 0.28 +
-      pointer.x * 0.35 +
+      -0.22 +
+      Math.sin(t * 0.6) * 0.1 +
+      pointer.x * 0.32 +
       scroll * Math.PI * 2 +
       (1 - intro) * -2.4;
-    coin.rotation.x = -0.1 + Math.sin(t * 0.5) * 0.06 + pointer.y * 0.2;
-    coin.position.y = Math.sin(t * 1.1) * 0.04 + scroll * 0.5;
+    coin.rotation.x = Math.sin(t * 0.45) * 0.04 + pointer.y * 0.24;
+    coin.position.y = Math.sin(t * 1.1) * 0.045 + scroll * 0.5;
     coin.scale.setScalar(0.85 + intro * 0.15);
     renderer.render(scene, camera);
   };

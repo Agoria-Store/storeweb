@@ -171,6 +171,7 @@ const from = Math.min(...courses.map((c) => c.priceUsdt));
     position: absolute;
     inset: -15%;
     width: 130% !important;
+    max-width: none;
     height: 130% !important;
     animation: appear 0.6s var(--ease) both;
   }
@@ -238,7 +239,8 @@ const from = Math.min(...courses.map((c) => c.priceUsdt));
       border: 0;
     }
     .stage {
-      justify-self: center;
+      justify-self: start;
+      margin-left: clamp(0px, 3vw, 56px);
       width: min(38vw, 76svh, 540px);
     }
   }
