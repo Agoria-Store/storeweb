@@ -2,18 +2,32 @@
 import type { Product } from '@course-store/store-client';
 interface Props {
   product: Product;
-  size?: 'sm' | 'lg';
+  eager?: boolean;
 }
-const { product: p, size = 'sm' } = Astro.props;
+const { product: p, eager = false } = Astro.props;
+const palettes = [
+  ['#5b3df5', '#ff7ac6', '#ffd23f'],
+  ['#0e8f63', '#5eead4', '#5b3df5'],
+  ['#ff7ac6', '#ffd23f', '#5eead4'],
+];
+const seed = [...p.id].reduce((a, c) => a + c.charCodeAt(0), 0);
+const [a, b, c] = palettes[seed % palettes.length]!;
 ---
 
-<div class={`specimen ${size}`}>
+<div class="thumb" style={`--a:${a};--b:${b};--c:${c}`}>
   {
     p.thumbnailUrl ? (
-      <img src={p.thumbnailUrl} alt="" width="640" height="400" loading="lazy" decoding="async" />
+      <img
+        src={p.thumbnailUrl}
+        alt=""
+        width="640"
+        height="400"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
     ) : (
-      <span class="den num" aria-hidden="true">
-        {p.priceUsdt}
+      <span class="ph" aria-hidden="true">
+        [Thumbnail]
       </span>
     )
   }
@@ -33,37 +47,14 @@ const { product: p, size = 'sm' } = Astro.props;
 </div>
 
 <style>
-  .specimen {
+  .thumb {
     position: relative;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
-    border: 1.5px solid var(--green);
-    outline: 1px solid var(--green);
-    outline-offset: -5px;
+    border-radius: 12px;
     background:
-      repeating-radial-gradient(
-        circle at 78% 50%,
-        transparent 0 5px,
-        rgb(95 163 155 / 0.35) 5px 6px
-      ),
-      var(--paper);
-  }
-  .lg {
-    outline-offset: -9px;
-  }
-  .den {
-    position: absolute;
-    right: 10%;
-    top: 50%;
-    translate: 0 -50%;
-    font-size: 2rem;
-    color: var(--green);
-    background: var(--paper);
-    padding: 0 4px;
-    line-height: 1;
-  }
-  .lg .den {
-    font-size: clamp(3rem, 8vw, 5rem);
+      radial-gradient(70% 90% at 20% 15%, var(--b), transparent 65%),
+      radial-gradient(60% 80% at 90% 90%, var(--c), transparent 60%), var(--a);
   }
   img,
   video {
@@ -80,10 +71,18 @@ const { product: p, size = 'sm' } = Astro.props;
   :global(.is-previewing) video {
     opacity: 1;
   }
+  .ph {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.85);
+  }
   .play {
     position: absolute;
-    left: 8px;
-    bottom: 8px;
+    left: 10px;
+    bottom: 10px;
     z-index: 2;
     display: grid;
     place-items: center;
@@ -91,8 +90,8 @@ const { product: p, size = 'sm' } = Astro.props;
     height: 36px;
     border: 0;
     border-radius: 50%;
-    background: var(--green);
-    color: var(--paper);
+    background: #fff;
+    color: var(--ink);
     cursor: pointer;
   }
 </style>

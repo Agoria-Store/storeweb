@@ -1,8 +1,6 @@
 ---
-import '@fontsource-variable/bodoni-moda/opsz.css';
-import '@fontsource/atkinson-hyperlegible/400.css';
-import '@fontsource/atkinson-hyperlegible/700.css';
-import bodoni from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2?url';
+import '@fontsource-variable/geist';
+import geist from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -23,11 +21,11 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#e9ede2" />
+    <meta name="theme-color" content="#f7f8fb" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href={bodoni} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={geist} as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -50,9 +48,10 @@ const {
     top: -60px;
     z-index: 100;
     padding: 10px 16px;
-    background: var(--green);
-    color: var(--paper);
-    font-weight: 700;
+    border-radius: 10px;
+    background: var(--ink);
+    color: #fff;
+    font-weight: 600;
   }
   .skip:focus {
     top: 12px;

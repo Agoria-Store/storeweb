@@ -10,14 +10,14 @@ Audience/job: international crypto/trading learners on phones deciding to buy a 
 
 ## Direction contract
 
-THESIS: Each course is printed like a banknote: the price is the denomination, the network is the series, and checking the note is how you learn to trust the payment. Refuses the dark-neon crypto landing with glowing gradients and glass cards.
+THESIS: The category standard, played straight at Stripe/Gumroad craft: a light, friendly storefront where the offer, the price in USDT and the Buy action are obvious at a glance. Refuses themed costume and the dark-neon crypto template.
 
-OWN-WORLD: Security-print paper (#E9EDE2) as the ground, intaglio green ink (#1F4D3A, text #12261D) for type and rules, guilloche teal (#5FA39B) for fine linework only, numbering-machine red (#B3261E) for serials and savings. Bodoni Moda for engraved display numerals and headings; Atkinson Hyperlegible for body (plain reading for non-native English). Double-ruled frames, guilloche rosettes, microtext strips, perforated stubs. Green reverse side owns whole regions (FAQ, footer).
+OWN-WORLD: Cool white ground (#F7F8FB) and white surfaces, ink #121826, violet primary (#5B3DF5), USDT green (#0E8F63) for prices, sun yellow (#FFD23F) for savings badges. Geist variable for everything, tight display tracking. 16px card radius, one soft offset shadow, pill controls only for small chips.
 
-STORY: Visitor sees the note face: what it is, the lowest full-course price as the denomination, and two actions. Below, a denomination ledger lists every product with computed savings. They check the note under UV to see USDT/TRC20 terms, step through the 4-step payment sequence, choose delivery, read the fine print, buy.
+STORY: Visitor reads the headline, sees a live checkout preview of a real catalog course with its USDT price and chapter savings, browses product cards, learns the four payment steps, picks delivery, reads FAQ, buys.
 
-FIRST VIEWPORT: Full-width note face in a double-ruled frame. Left two-thirds: red series line, H1 in Bodoni at ~5.5rem, one value line, primary "Browse courses" and secondary "Watch a free chapter". Right third: three.js guilloche rosette with the denomination numeral centred. Microtext strip along the bottom edge; "Check under UV light" control at the frame corner.
+FIRST VIEWPORT: Skewed three.js flowing gradient band across the top behind the nav and hero. Left: H1 ~4.5rem, value line, "Browse courses" primary and "Get a free chapter" secondary. Right: a white checkout-preview card for the first course (title, chapters, full price, savings, Buy).
 
-FORM: Security-printed banknote, position 1 on my ordered list (chosen as Impeccable's pick over assigned candidate 7). seed:b9c8650db033710e. Signature interaction: UV lamp revealing fluorescent terms; motion: rosette draws in once on load, pinned payment sequence on scroll.
+FORM: category standard (canon), chosen by the user after the direction round; seed: none (pinned) "something more general and modern"; references Stripe, Gumroad / Lemon Squeezy; light theme.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

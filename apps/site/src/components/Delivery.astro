@@ -1,11 +1,13 @@
 ---
 const options = [
   {
+    key: 'download',
     title: 'Download link',
     body: 'After payment you get a private link to download the files. The link expires and allows a limited number of downloads, so save your files once you have them.',
     points: ['Keep the files', 'Watch offline', 'Link expires after [EXPIRY TIME]'],
   },
   {
+    key: 'telegram',
     title: 'Private Telegram channel',
     body: 'After payment, send your order ID to our Telegram bot. It replies with a one-time invite to the course channel that only you can use.',
     points: ['Watch inside Telegram', 'Invite works once', 'New lessons posted in the channel'],
@@ -17,10 +19,39 @@ const options = [
   <div class="wrap">
     <h2 id="delivery-title" class="h2">How you receive the course</h2>
     <p class="lede">Each course page says which of the two it uses.</p>
-    <div class="stubs">
+    <div class="grid">
       {
         options.map((o) => (
-          <article class="stub">
+          <article class={`opt card ${o.key}`}>
+            <span class="icon" aria-hidden="true">
+              {o.key === 'download' ? (
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
+                </svg>
+              ) : (
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M21 4 3 11l6 2 2 6 3-4 5 4z" />
+                </svg>
+              )}
+            </span>
             <h3>{o.title}</h3>
             <p>{o.body}</p>
             <ul>
@@ -36,57 +67,63 @@ const options = [
 </section>
 
 <style>
-  .stubs {
+  .grid {
     display: grid;
-    margin-top: calc(var(--u) * 5);
-    border: 2px solid var(--green);
+    gap: 20px;
+    margin-top: 40px;
   }
-  .stub {
+  .opt {
+    --c: var(--primary);
+    --soft: var(--primary-soft);
     display: grid;
-    gap: calc(var(--u) * 1.5);
+    gap: 12px;
     align-content: start;
-    padding: calc(var(--u) * 4);
+    padding: 32px;
   }
-  /* Perforation between the two stubs. */
-  .stub + .stub {
-    border-top: 2px dotted var(--green);
+  .opt.telegram {
+    --c: #1d8fd1;
+    --soft: #e3f3fc;
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--soft);
+    color: var(--c);
   }
   h3 {
-    font-size: 1.9rem;
-    color: var(--green);
+    margin-top: 8px;
+    font-size: 1.5rem;
   }
   p {
     color: var(--muted);
-    max-width: 52ch;
   }
   ul {
     display: grid;
-    gap: 6px;
+    gap: 8px;
     padding: 0;
-    margin: var(--u) 0 0;
+    margin: 8px 0 0;
     list-style: none;
   }
   li {
     display: flex;
-    gap: var(--u);
-    align-items: baseline;
+    gap: 10px;
+    align-items: center;
+    font-weight: 500;
   }
   li::before {
     content: '';
     flex: none;
-    width: 8px;
-    height: 8px;
-    border: 1.5px solid var(--red);
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    translate: 0 -1px;
+    background: var(--c);
   }
   @media (min-width: 760px) {
-    .stubs {
+    .grid {
       grid-template-columns: 1fr 1fr;
-    }
-    .stub + .stub {
-      border-top: 0;
-      border-left: 2px dotted var(--green);
     }
   }
 </style>

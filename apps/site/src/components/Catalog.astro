@@ -20,18 +20,18 @@ const DEFAULT = types.includes('course') ? 'course' : 'all';
           chapters added together.
         </p>
       </div>
-      <div class="filters" role="group" aria-label="Show" data-filters>
+      <div class="filters" role="group" aria-label="Filter products" data-filters>
         {
           ['all', ...types].map((t) => (
             <button type="button" data-filter={t} aria-pressed={t === DEFAULT ? 'true' : 'false'}>
-              {t === 'all' ? 'Everything' : `${TYPE_LABEL[t as ProductType]}s`}
+              {t === 'all' ? 'All' : `${TYPE_LABEL[t as ProductType]}s`}
             </button>
           ))
         }
       </div>
     </div>
     <p class="sr-only" aria-live="polite" data-filter-status></p>
-    <ul class="ledger" data-grid data-default={DEFAULT}>
+    <ul class="grid" data-grid data-default={DEFAULT}>
       {products.map((p) => <CourseCard product={p} />)}
     </ul>
   </div>
@@ -45,40 +45,50 @@ const DEFAULT = types.includes('course') ? 'course' : 'all';
 <style>
   .head {
     display: grid;
-    gap: calc(var(--u) * 4);
-    margin-bottom: calc(var(--u) * 5);
+    gap: 28px;
+    margin-bottom: 40px;
   }
   .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: calc(var(--u) * 3);
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--surface-2);
     justify-self: start;
     align-self: end;
   }
   .filters button {
-    min-height: 44px;
-    padding: 0 2px;
+    min-height: 40px;
+    padding: 0 16px;
     border: 0;
-    border-bottom: 2px solid transparent;
-    background: none;
+    border-radius: 999px;
+    background: transparent;
     color: var(--muted);
-    font: 700 1rem/1 var(--font-body);
+    font: 600 0.9rem/1 var(--font);
     cursor: pointer;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
   }
   .filters button:hover {
     color: var(--ink);
   }
   .filters button[aria-pressed='true'] {
-    color: var(--green);
-    border-bottom-color: var(--red);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgb(18 24 38 / 0.12);
   }
-  .ledger {
+  .grid {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-bottom: 1px solid var(--rule);
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   }
-  .ledger :global([data-card][hidden]) {
+  .grid :global([data-card][hidden]) {
     display: none;
   }
   @media (min-width: 900px) {

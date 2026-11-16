@@ -33,7 +33,8 @@ Pay in USDT on TRC20 only, and buy granularly: full course, single chapter, or s
 
 ## Brand Commitments
 
-- None final. The original brief suggested navy/teal/amber with Space Grotesk and Inter; the user has allowed these to change in a redesign.
+- No brand name or logo yet.
+- Standing preference (2026-11-16): a general, modern, light design at the craft level of Stripe and Gumroad / Lemon Squeezy, not a themed concept world. Subtle three.js hero allowed. Themed worlds (exchange board, banknote) were tried and rejected.
 
 ## Evidence on Hand
 

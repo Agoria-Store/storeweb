@@ -24,140 +24,95 @@ const partName = isBundle ? 'product' : 'chapter';
 const saved = Math.round((p.partsTotal - p.priceUsdt) * 100) / 100;
 const delivery =
   p.delivery === 'telegram_channel'
-    ? 'Delivered as a one-time invite to a private Telegram channel'
-    : 'Delivered as an expiring download link';
+    ? 'One-time invite to a private Telegram channel'
+    : 'Expiring download link';
 ---
 
 <Base title={`${p.title}: [BRAND NAME]`} description={p.description}>
-  <section class="top">
-    <div class="wrap">
-      <a class="back" href="/#courses">All courses</a>
-      <div class="note frame">
-        <div class="serial line" aria-hidden="true">
-          <span>SERIES TRC20</span>
-          <span>{TYPE_LABEL[p.type].toUpperCase()}</span>
+  <div class="wrap page">
+    <a class="back" href="/#courses">All courses</a>
+
+    <div class="layout">
+      <div class="main">
+        <Thumb product={p} eager />
+        <p class="kind">
+          {TYPE_LABEL[p.type]}{parts.length > 0 && `, ${parts.length} ${partName}s`}
+        </p>
+        <h1>{p.title}</h1>
+        <p class="lede">{p.description}</p>
+
+        <h2 class="parts-title">{isBundle ? 'What the bundle includes' : 'Chapters'}</h2>
+        <div class="accordion card">
+          {
+            parts.map((c, i) => (
+              <details id={c.slug} class="item" open={i === 0}>
+                <summary>
+                  <span class="n">{i + 1}</span>
+                  <span class="t">{c.title}</span>
+                  <span class="price">{formatUsdt(c.priceUsdt)}</span>
+                  <svg class="chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  </svg>
+                </summary>
+                <div class="panel">
+                  <p>{c.description}</p>
+                  {(nested[i]?.length ?? 0) > 0 && (
+                    <ul class="videos">
+                      {nested[i]!.map((v) => (
+                        <li>
+                          <span>{v.title}</span>
+                          <a href={v.checkoutUrl} rel="noopener">
+                            Buy video, {formatUsdt(v.priceUsdt)}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {isBundle ? (
+                    <a class="btn btn-secondary" href={productHref(c)}>
+                      View course
+                    </a>
+                  ) : (
+                    <a class="btn btn-secondary" href={c.checkoutUrl} rel="noopener">
+                      Buy this chapter, {formatUsdt(c.priceUsdt)}
+                    </a>
+                  )}
+                </div>
+              </details>
+            ))
+          }
         </div>
-        <div class="face">
-          <div>
-            <h1>{p.title}</h1>
-            <p class="lede">{p.description}</p>
-            <p class="delivery">{delivery}.</p>
-            <div class="buy">
-              <a class="btn btn-buy" href={p.checkoutUrl} rel="noopener">
-                Buy the {whole} for {formatUsdt(p.priceUsdt)}
-              </a>
-              {
-                parts.length > 0 && !isBundle && (
-                  <a class="btn btn-secondary" href="#parts">
-                    Buy single chapters
-                  </a>
-                )
-              }
-            </div>
-            <p class="note-small">
-              Checkout opens our payment partner's page with the exact USDT amount and TRC20
-              address.
+      </div>
+
+      <aside class="buybox card" aria-label="Purchase">
+        <p class="label">{isBundle ? 'Bundle' : 'Full course'}</p>
+        <p class="big price">{formatUsdt(p.priceUsdt)}</p>
+        {
+          p.savings > 0 && (
+            <p class="compare">
+              <s>{formatUsdt(p.partsTotal)}</s> bought separately
+              <span class="badge-save">Save {p.savings}%</span>
             </p>
-          </div>
-          <Thumb product={p} size="lg" />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {
-    p.savings > 0 && (
-      <section class="change" aria-labelledby="change-title">
-        <div class="wrap change-grid">
-          <h2 id="change-title" class="h2">
-            The {whole} saves {formatUsdt(saved)}
-          </h2>
-          <table class="sum">
-            <caption class="sr-only">
-              Price of each {partName} compared with the {whole}
-            </caption>
-            <tbody>
-              {parts.map((c) => (
-                <tr>
-                  <th scope="row">{c.title}</th>
-                  <td class="num">{c.priceUsdt}</td>
-                </tr>
-              ))}
-              <tr class="total">
-                <th scope="row">
-                  All {parts.length} {partName}s separately
-                </th>
-                <td class="num">{p.partsTotal}</td>
-              </tr>
-              <tr class="whole">
-                <th scope="row">The {whole}</th>
-                <td class="num">{p.priceUsdt}</td>
-              </tr>
-              <tr class="saved">
-                <th scope="row">You save ({p.savings}%)</th>
-                <td class="num">{saved}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    )
-  }
-
-  <section id="parts" class="section parts" aria-labelledby="parts-title">
-    <div class="wrap">
-      <h2 id="parts-title" class="h2">{isBundle ? 'What the bundle includes' : 'Chapters'}</h2>
-      <p class="lede">
-        {
-          isBundle
-            ? 'Every product below is included.'
-            : 'Open a chapter to see what it covers, or buy it on its own.'
+          )
         }
-      </p>
-      <div class="accordion">
-        {
-          parts.map((c, i) => (
-            <details id={c.slug} class="item" open={i === 0}>
-              <summary>
-                <span class="n num">{i + 1}</span>
-                <span class="t">{c.title}</span>
-                <span class="price">
-                  <span class="num">{c.priceUsdt}</span> USDT
-                </span>
-                <svg class="chev" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" />
-                </svg>
-              </summary>
-              <div class="panel">
-                <p>{c.description}</p>
-                {(nested[i]?.length ?? 0) > 0 && (
-                  <ul class="videos">
-                    {nested[i]!.map((v) => (
-                      <li>
-                        <span>{v.title}</span>
-                        <a href={v.checkoutUrl} rel="noopener">
-                          Buy this video for {formatUsdt(v.priceUsdt)}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {isBundle ? (
-                  <a class="btn btn-secondary" href={productHref(c)}>
-                    See this course
-                  </a>
-                ) : (
-                  <a class="btn btn-secondary" href={c.checkoutUrl} rel="noopener">
-                    Buy this chapter for {formatUsdt(c.priceUsdt)}
-                  </a>
-                )}
-              </div>
-            </details>
-          ))
-        }
-      </div>
+        <a class="btn btn-primary wide" href={p.checkoutUrl} rel="noopener">Buy {whole}</a>
+        <ul class="facts">
+          <li>Pay with USDT on TRC20</li>
+          <li>{delivery}</li>
+          {
+            p.savings > 0 && (
+              <li>
+                {formatUsdt(saved)} less than all {partName}s
+              </li>
+            )
+          }
+        </ul>
+        <p class="note">
+          Checkout opens our payment partner's page with the exact USDT amount and TRC20 address.
+        </p>
+      </aside>
     </div>
-  </section>
+  </div>
 </Base>
 
 <script>
@@ -166,136 +121,74 @@ const delivery =
 </script>
 
 <style>
-  .top {
-    padding: calc(var(--u) * 3) 0 calc(var(--u) * 8);
+  .page {
+    padding: 24px 0 96px;
   }
   .back {
     display: inline-block;
-    margin-bottom: calc(var(--u) * 2);
-    color: var(--green);
-    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--muted);
+    font-weight: 500;
+    text-decoration: none;
   }
-  .note {
-    padding: calc(var(--u) * 3);
+  .back:hover {
+    color: var(--primary);
   }
-  .line {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-  }
-  .face {
+  .layout {
     display: grid;
-    gap: calc(var(--u) * 4);
-    padding-top: calc(var(--u) * 3);
+    gap: 32px;
+    align-items: start;
+  }
+  .kind {
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 0.95rem;
   }
   h1 {
-    font-size: clamp(2.4rem, 7vw, 4.8rem);
-    font-variation-settings: 'opsz' 96;
-    color: var(--green);
+    margin-top: 6px;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
   }
-  .delivery {
-    margin-top: calc(var(--u) * 2);
-    font-weight: 700;
-  }
-  .buy {
-    display: flex;
-    flex-wrap: wrap;
-    gap: calc(var(--u) * 1.5);
-    margin-top: calc(var(--u) * 4);
-  }
-  .note-small {
-    margin-top: calc(var(--u) * 2);
-    color: var(--muted);
-    font-size: 0.9rem;
-  }
-  .change {
-    background: var(--green);
-    color: var(--on-green);
-    padding-block: calc(var(--u) * 10);
-  }
-  .change-grid {
-    display: grid;
-    gap: calc(var(--u) * 5);
-  }
-  .change :focus-visible {
-    outline-color: var(--uv-ink);
-  }
-  .sum {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .sum th {
-    text-align: left;
-    font-weight: 400;
-    padding: 12px 0;
-    color: var(--on-green-muted);
-  }
-  .sum td {
-    text-align: right;
-    font-size: 1.5rem;
-  }
-  .sum tr {
-    border-bottom: 1px solid rgb(233 237 226 / 0.2);
-  }
-  .total th,
-  .whole th {
-    color: var(--on-green);
-    font-weight: 700;
-  }
-  .total td {
-    text-decoration: line-through;
-    text-decoration-thickness: 2px;
-  }
-  .whole td {
-    font-size: 2.2rem;
-  }
-  .saved {
-    border-bottom: 0 !important;
-  }
-  .saved th,
-  .saved td {
-    color: var(--uv-ink);
-    font-weight: 700;
+  .parts-title {
+    margin: 48px 0 16px;
+    font-size: 1.6rem;
   }
   .accordion {
-    margin-top: calc(var(--u) * 5);
-    border-bottom: 1px solid var(--rule);
+    padding: 4px 20px;
   }
-  .item {
-    border-top: 1px solid var(--rule);
+  .item + .item {
+    border-top: 1px solid var(--line);
   }
   summary {
     display: grid;
-    grid-template-columns: 2.5rem 1fr auto auto;
+    grid-template-columns: 2rem 1fr auto auto;
     align-items: center;
-    gap: calc(var(--u) * 2);
-    padding: calc(var(--u) * 2.5) 0;
+    gap: 12px;
+    padding: 18px 0;
     cursor: pointer;
     list-style: none;
   }
   summary::-webkit-details-marker {
     display: none;
   }
-  summary:hover .t {
-    text-decoration: underline;
-  }
   .n {
-    font-size: 1.6rem;
-    color: var(--red);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 650;
   }
   .t {
-    font: 600 1.3rem/1.2 var(--font-display);
+    font-weight: 600;
   }
-  .price {
-    font-weight: 700;
-    white-space: nowrap;
-  }
-  .price .num {
-    font-size: 1.3rem;
-    color: var(--green);
+  summary:hover .t {
+    color: var(--primary);
   }
   .chev {
-    color: var(--green);
+    color: var(--muted);
     transition: transform 0.3s var(--ease);
   }
   .item[open] .chev {
@@ -303,9 +196,9 @@ const delivery =
   }
   .panel {
     display: grid;
-    gap: calc(var(--u) * 2);
+    gap: 14px;
     justify-items: start;
-    padding: 0 0 calc(var(--u) * 3) calc(2.5rem + var(--u) * 2);
+    padding: 0 0 20px calc(2rem + 12px);
     color: var(--muted);
   }
   .videos {
@@ -317,20 +210,72 @@ const delivery =
   .videos li {
     display: flex;
     justify-content: space-between;
-    padding: var(--u) 0;
-    border-top: 1px solid var(--rule);
+    padding: 8px 0;
+    border-top: 1px solid var(--line);
   }
-  @media (min-width: 900px) {
-    .note {
-      padding: calc(var(--u) * 4) calc(var(--u) * 6) calc(var(--u) * 6);
+  .buybox {
+    padding: 28px;
+    box-shadow: var(--shadow-lg);
+  }
+  .label {
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .big {
+    font-size: 2.6rem;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .compare {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .wide {
+    width: 100%;
+    margin-top: 24px;
+  }
+  .facts {
+    display: grid;
+    gap: 10px;
+    margin: 24px 0 0;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+    font-size: 0.95rem;
+  }
+  .facts li {
+    display: flex;
+    gap: 10px;
+  }
+  .facts li::before {
+    content: '';
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    border-radius: 50%;
+    background: var(--money)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E")
+      center / 12px no-repeat;
+  }
+  .note {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: 1fr 380px;
+      gap: 48px;
     }
-    .face {
-      grid-template-columns: 1.4fr 1fr;
-      align-items: center;
-    }
-    .change-grid {
-      grid-template-columns: 1fr 1fr;
-      align-items: start;
+    .buybox {
+      position: sticky;
+      top: 92px;
     }
   }
   @media (max-width: 560px) {

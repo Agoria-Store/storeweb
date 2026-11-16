@@ -3,74 +3,61 @@ import { BRAND, TELEGRAM_BOT_URL } from '../lib/store';
 ---
 
 <footer class="footer">
-  <div class="wrap grid">
-    <div>
-      <p class="brand">{BRAND}</p>
-      <p class="small">[ONE-LINE FOOTER DESCRIPTION]</p>
+  <div class="wrap">
+    <div class="cta card">
+      <div>
+        <h2>Prefer Telegram?</h2>
+        <p>Browse the catalog, buy, and claim channel access inside our bot.</p>
+      </div>
+      <a class="btn btn-primary" href={TELEGRAM_BOT_URL} rel="noopener">Open the Telegram bot</a>
     </div>
-    <div class="cta">
-      <p class="small">Browse and buy inside Telegram, and claim channel access there.</p>
-      <a class="btn" href={TELEGRAM_BOT_URL} rel="noopener">Open the Telegram bot</a>
+    <div class="legal">
+      <span class="brand">{BRAND}</span>
+      <span>Payments in USDT on TRC20, processed by our checkout partner.</span>
+      <span>Educational content only. Not financial advice.</span>
+      <span>© {new Date().getFullYear()}</span>
     </div>
-  </div>
-  <div class="wrap legal small">
-    <span>© {new Date().getFullYear()} {BRAND}</span>
-    <span>Payments in USDT on TRC20, processed by our checkout partner.</span>
-    <span>Educational content only. Not financial advice.</span>
   </div>
 </footer>
 
 <style>
   .footer {
-    background: var(--green-deep);
-    color: var(--on-green);
-    padding: calc(var(--u) * 8) 0 calc(var(--u) * 4);
-  }
-  .grid {
-    display: grid;
-    gap: calc(var(--u) * 4);
-  }
-  .brand {
-    font: 600 2rem/1 var(--font-display);
-    margin-bottom: var(--u);
-  }
-  .small {
-    color: var(--on-green-muted);
-    font-size: 0.95rem;
+    padding: 24px 0 40px;
   }
   .cta {
     display: grid;
-    gap: calc(var(--u) * 2);
-    justify-items: start;
+    gap: 24px;
+    padding: clamp(28px, 5vw, 48px);
+    background: var(--ink);
+    color: #fff;
+    box-shadow: var(--shadow-lg);
   }
-  .btn {
-    background: var(--paper);
-    color: var(--green);
-    border-color: var(--paper);
+  .cta h2 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
   }
-  .btn:hover {
-    background: #fff;
+  .cta p {
+    margin-top: 8px;
+    color: #c4cad8;
   }
-  :focus-visible {
-    outline-color: var(--uv-ink);
+  .cta :focus-visible {
+    outline-color: var(--sun);
   }
   .legal {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--u) calc(var(--u) * 3);
-    margin-top: calc(var(--u) * 6);
-    padding-top: calc(var(--u) * 2.5);
-    border-top: 1px solid rgb(233 237 226 / 0.25);
+    gap: 8px 24px;
+    margin-top: 32px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .brand {
+    color: var(--ink);
+    font-weight: 700;
   }
   @media (min-width: 760px) {
-    .grid {
-      grid-template-columns: 1fr auto;
-      align-items: end;
-    }
     .cta {
-      justify-items: end;
-      text-align: right;
+      grid-template-columns: 1fr auto;
+      align-items: center;
     }
   }
 </style>

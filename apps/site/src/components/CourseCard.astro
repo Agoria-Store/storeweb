@@ -8,59 +8,54 @@ interface Props {
 }
 const { product: p } = Astro.props;
 const unit = p.type === 'bundle' ? 'products' : 'chapters';
-const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'download link';
-const kind = [
-  TYPE_LABEL[p.type],
-  p.childCount > 0 ? `${p.childCount} ${unit}` : null,
-  `delivered by ${delivery}`,
-]
+const kind = [TYPE_LABEL[p.type], p.childCount > 0 ? `${p.childCount} ${unit}` : null]
   .filter(Boolean)
-  .join(', ');
+  .join(' · ');
+const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'Download';
 ---
 
-<li class="row" data-card data-type={p.type}>
+<li class="item card" data-card data-type={p.type}>
   <Thumb product={p} />
-  <div class="what">
+  <div class="body">
     <p class="kind">{kind}</p>
     <h3><a href={productHref(p)} class="stretched">{p.title}</a></h3>
     <p class="desc">{p.description}</p>
+    <div class="foot">
+      <span class="price amount">{formatUsdt(p.priceUsdt)}</span>
+      {p.savings > 0 && <span class="badge-save">Save {p.savings}%</span>}
+    </div>
+    <p class="delivery">{delivery}</p>
   </div>
-  <div class="price">
-    <span class="num amount">{p.priceUsdt}</span>
-    <span class="unit">USDT</span>
-    {
-      p.savings > 0 && (
-        <span class="save serial">
-          {p.savings}% less than buying {unit} separately
-        </span>
-      )
-    }
-  </div>
-  <a class="btn btn-buy buy" href={p.checkoutUrl} rel="noopener">
-    Buy<span class="sr-only"> {p.title} for {formatUsdt(p.priceUsdt)}</span>
-  </a>
 </li>
 
 <style>
-  .row {
+  .item {
     position: relative;
     display: grid;
-    grid-template-columns: 112px 1fr;
-    gap: calc(var(--u) * 2);
-    padding: calc(var(--u) * 3) 0;
-    border-top: 1px solid var(--rule);
-    transition: background-color 0.2s;
+    grid-template-rows: auto 1fr;
+    padding: 10px;
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease);
   }
-  .row:hover {
-    background: rgb(221 229 216 / 0.6);
+  .item:hover,
+  .item:focus-within {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .body {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+    padding: 16px 10px 10px;
   }
   .kind {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--muted);
   }
   h3 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    margin-top: 4px;
+    font-size: 1.35rem;
+    letter-spacing: -0.025em;
   }
   .stretched {
     text-decoration: none;
@@ -69,64 +64,23 @@ const kind = [
     content: '';
     position: absolute;
     inset: 0;
-  }
-  .stretched:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
+    border-radius: inherit;
   }
   .desc {
-    margin-top: var(--u);
     color: var(--muted);
-    max-width: 52ch;
+    font-size: 0.95rem;
   }
-  .price {
-    grid-column: 2;
+  .foot {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0 var(--u);
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
   }
   .amount {
-    font-size: 2.4rem;
-    color: var(--green);
-    line-height: 1;
+    font-size: 1.25rem;
   }
-  .unit {
-    font-weight: 700;
-    color: var(--red);
-    letter-spacing: 0.12em;
-    font-size: 0.85rem;
-  }
-  .save {
-    flex-basis: 100%;
-    margin-top: 6px;
-    font-size: 0.85rem;
-    letter-spacing: 0.02em;
-  }
-  .buy {
-    grid-column: 2;
-    position: relative;
-    z-index: 1;
-    justify-self: start;
-    min-width: 120px;
-  }
-  @media (min-width: 900px) {
-    .row {
-      grid-template-columns: 176px 1fr 220px 140px;
-      align-items: center;
-      gap: calc(var(--u) * 4);
-      padding-inline: var(--u);
-    }
-    .price,
-    .buy {
-      grid-column: auto;
-    }
-    .price {
-      justify-content: flex-end;
-      text-align: right;
-    }
-    .buy {
-      justify-self: end;
-    }
+  .delivery {
+    font-size: 0.8rem;
+    color: var(--muted);
   }
 </style>

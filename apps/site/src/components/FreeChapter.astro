@@ -7,7 +7,7 @@ const freeVideo = null as null | { src: string; poster: string; captions?: strin
 const course = (await (await store()).listProducts({ type: 'course' }))[0];
 ---
 
-<section id="free-chapter" class="section free" aria-labelledby="free-title">
+<section id="free-chapter" class="section" aria-labelledby="free-title">
   <div class="wrap layout">
     <div class="copy">
       <h2 id="free-title" class="h2">Watch a full chapter before you pay</h2>
@@ -15,12 +15,12 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
       {
         course && (
           <a class="btn btn-secondary" href={productHref(course)}>
-            See every chapter of {course.title}
+            See all chapters of {course.title}
           </a>
         )
       }
     </div>
-    <div class="player frame">
+    <div class="player">
       {
         freeVideo ? (
           <video
@@ -52,12 +52,9 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
 </section>
 
 <style>
-  .free {
-    background: var(--paper-deep);
-  }
   .layout {
     display: grid;
-    gap: calc(var(--u) * 5);
+    gap: 40px;
     align-items: center;
   }
   .copy {
@@ -65,13 +62,15 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
     justify-items: start;
   }
   .copy .btn {
-    margin-top: calc(var(--u) * 4);
+    margin-top: 28px;
   }
   .player {
     position: relative;
     aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 20px;
     background: var(--ink);
-    padding: 10px;
+    box-shadow: var(--shadow-lg);
   }
   video {
     width: 100%;
@@ -79,13 +78,15 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
   }
   .ph {
     position: absolute;
-    inset: 10px;
+    inset: 0;
     display: grid;
     place-content: center;
     justify-items: center;
-    gap: calc(var(--u) * 2);
-    color: var(--on-green-muted);
-    background: var(--green-deep);
+    gap: 16px;
+    color: #c4cad8;
+    background:
+      radial-gradient(60% 80% at 20% 0%, rgb(91 61 245 / 0.55), transparent 60%),
+      radial-gradient(50% 70% at 100% 100%, rgb(255 122 198 / 0.35), transparent 60%), var(--ink);
   }
   .play {
     display: grid;
@@ -93,8 +94,8 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: var(--paper);
-    color: var(--green);
+    background: #fff;
+    color: var(--ink);
   }
   @media (min-width: 900px) {
     .layout {

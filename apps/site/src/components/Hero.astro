@@ -1,286 +1,297 @@
 ---
-import Rosette from './Rosette.astro';
+import { formatUsdt } from '@course-store/store-client';
 import { store } from '../lib/store';
+import { withSavings, partsOf, productHref } from '../lib/catalog';
 
-const courses = await (await store()).listProducts({ type: 'course' });
-const from = Math.min(...courses.map((c) => c.priceUsdt));
-const micro = 'PAY IN USDT ON THE TRC20 NETWORK ONLY '.repeat(14);
+const s = await store();
+const first = (await s.listProducts({ type: 'course' }))[0];
+const course = first ? await withSavings(first) : undefined;
+const chapters = first ? await partsOf(first) : [];
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="wrap">
-    <div class="note frame" data-note>
-      <div class="top serial" aria-hidden="true">
-        <span>SERIES TRC20</span>
-        <span>USDT</span>
-      </div>
+  <div class="band" aria-hidden="true" data-band></div>
 
-      <div class="face">
-        <div class="copy">
-          <h1 id="hero-title">[Headline about the outcome for the learner]</h1>
-          <p class="value">
-            [Value line: who the courses are for and what they will be able to do.] Buy the full
-            course, one chapter or a single video.
-          </p>
-          <div class="ctas">
-            <a class="btn btn-primary" href="#courses">Browse courses</a>
-            <a class="btn btn-secondary" href="#free-chapter">Get a free chapter</a>
-          </div>
-        </div>
-
-        <div class="seal" data-rosette>
-          <Rosette />
-          <p class="denom">
-            <span class="from">Full courses from</span>
-            <span class="num amount">{from}</span>
-            <span class="unit">USDT</span>
-          </p>
-        </div>
-      </div>
-
-      <p class="micro" aria-hidden="true">{micro}</p>
-
-      <button
-        class="uv-btn"
-        type="button"
-        data-uv-toggle
-        aria-pressed="false"
-        aria-controls="uv-terms"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle>
-          <path
-            d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"></path>
-        </svg>
-        <span data-uv-label>Check under UV light</span>
-      </button>
-
-      <div class="uv" id="uv-terms" role="region" aria-label="Payment terms under UV light">
-        <div class="uv-pattern" aria-hidden="true">{'USDT TRC20 '.repeat(160)}</div>
-        <dl class="uv-terms">
-          <div><dt>Currency</dt><dd>USDT only</dd></div>
-          <div><dt>Network</dt><dd>TRC20 (Tron) only</dd></div>
-          <div><dt>Checkout</dt><dd>Hosted by our payment partner</dd></div>
-          <div><dt>Delivery</dt><dd>Download link or one-time Telegram invite</dd></div>
-        </dl>
+  <div class="wrap grid">
+    <div class="copy">
+      <p class="tag"><span class="dot"></span>Pay with USDT on TRC20</p>
+      <h1 id="hero-title">[Headline about the outcome for the learner]</h1>
+      <p class="value">
+        [Value line: who the courses are for and what they will be able to do.] Buy the full course,
+        one chapter, or a single video.
+      </p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#courses">Browse courses</a>
+        <a class="btn btn-secondary" href="#free-chapter">Get a free chapter</a>
       </div>
     </div>
+
+    {
+      course && (
+        <aside class="preview card" aria-label={`Example: buying ${course.title}`}>
+          <div class="pv-head">
+            <span class="thumb" aria-hidden="true" />
+            <div>
+              <p class="pv-kind">Course, {chapters.length} chapters</p>
+              <p class="pv-title">
+                <a href={productHref(course)}>{course.title}</a>
+              </p>
+            </div>
+          </div>
+          <ul class="pv-list">
+            {chapters.map((c) => (
+              <li>
+                <span>{c.title}</span>
+                <span class="price">{formatUsdt(c.priceUsdt)}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="pv-total">
+            <div>
+              <p class="pv-label">Full course</p>
+              <p class="pv-price price">{formatUsdt(course.priceUsdt)}</p>
+            </div>
+            {course.savings > 0 && <span class="badge-save">Save {course.savings}%</span>}
+          </div>
+          <a class="btn btn-primary pv-buy" href={course.checkoutUrl} rel="noopener">
+            Buy full course
+          </a>
+          <p class="pv-foot">
+            <svg width="18" height="18" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="16" fill="#26a17b" />
+              <path d="M9 8h14v4h-5v13h-4V12H9z" fill="#fff" />
+              <ellipse
+                cx="16"
+                cy="15.5"
+                rx="7"
+                ry="2"
+                fill="none"
+                stroke="#fff"
+                stroke-width="1.6"
+              />
+            </svg>
+            Checkout shows the exact USDT amount and TRC20 address.
+          </p>
+        </aside>
+      )
+    }
   </div>
 </section>
 
 <script>
-  import { initUv } from '../scripts/uv';
   import { richMotionAllowed } from '../scripts/env';
-  import { draw2d } from '../lib/guilloche';
-
-  const note = document.querySelector<HTMLElement>('[data-note]');
-  const seal = document.querySelector<HTMLElement>('[data-rosette]');
-  const flat = document.querySelector<HTMLCanvasElement>('[data-rosette-2d]');
-  if (note) initUv(note);
-
-  if (note && seal && flat) {
-    if (richMotionAllowed()) {
-      const go = () =>
-        import('../scripts/rosette-gl').then(({ mountRosette }) => {
-          if (!mountRosette(seal, note)) draw2d(flat);
-        });
-      if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1200 });
-      else setTimeout(go, 200);
-    } else {
-      draw2d(flat);
-    }
+  const band = document.querySelector<HTMLElement>('[data-band]');
+  if (band && richMotionAllowed()) {
+    const go = () =>
+      import('../scripts/gradient-gl').then(({ mountGradient }) => mountGradient(band));
+    // Start after load settles so shader compile never competes with first paint or input.
+    const later = () =>
+      setTimeout(() => {
+        if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 2000 });
+        else go();
+      }, 1500);
+    if (document.readyState === 'complete') later();
+    else addEventListener('load', later, { once: true });
   }
 </script>
 
 <style>
   .hero {
-    padding: calc(var(--u) * 3) 0 calc(var(--u) * 6);
-  }
-  .note {
-    --lx: 50%;
-    --ly: 50%;
     position: relative;
+    padding: 56px 0 96px;
+    isolation: isolate;
+  }
+  .band {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 640px;
+    z-index: -1;
     overflow: hidden;
-    padding: calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 7);
+    transform: skewY(-6deg);
+    transform-origin: top left;
     background:
-      radial-gradient(ellipse 60% 80% at 82% 45%, var(--paper-deep), transparent 70%), var(--paper);
+      radial-gradient(60% 80% at 85% 20%, #ff7ac6, transparent 60%),
+      radial-gradient(50% 70% at 100% 80%, #ffd23f, transparent 60%),
+      radial-gradient(60% 90% at 60% 0%, #5eead4, transparent 60%), #5b3df5;
   }
-  .top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
+  .band :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    animation: fade 1.2s var(--ease) both;
   }
-  .face {
+  /* Keeps the copy side light so ink text holds contrast over the moving colour. */
+  .band::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, var(--bg) 0%, var(--bg) 34%, rgb(247 248 251 / 0) 62%);
+  }
+  .grid {
     display: grid;
-    gap: calc(var(--u) * 4);
-    padding-top: calc(var(--u) * 4);
+    gap: 48px;
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    justify-items: start;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 10px;
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #26a17b;
+    box-shadow: 0 0 0 3px rgb(38 161 123 / 0.2);
   }
   h1 {
-    font-size: clamp(2.6rem, 8.4vw, 5.6rem);
-    font-variation-settings: 'opsz' 96;
-    color: var(--green);
-    max-width: 13ch;
+    margin-top: 24px;
+    font-size: clamp(2.7rem, 7.5vw, 4.75rem);
+    max-width: 14ch;
   }
   .value {
-    margin-top: calc(var(--u) * 3);
-    max-width: 44ch;
-    font-size: 1.15rem;
+    margin-top: 20px;
+    max-width: 46ch;
+    font-size: 1.2rem;
     color: var(--muted);
   }
   .ctas {
     display: flex;
     flex-wrap: wrap;
-    gap: calc(var(--u) * 1.5);
-    margin-top: calc(var(--u) * 4);
+    gap: 12px;
+    margin-top: 32px;
   }
-  .seal {
-    position: relative;
+  .preview {
     width: min(100%, 420px);
-    aspect-ratio: 1;
     justify-self: center;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    animation: rise 0.9s 0.15s var(--ease) both;
   }
-  .seal :global(canvas) {
-    position: absolute;
-    inset: 0;
-    width: 100% !important;
-    height: 100% !important;
+  .pv-head {
+    display: flex;
+    gap: 14px;
+    align-items: center;
   }
-  .seal[data-live] :global(.rosette-2d) {
-    display: none;
+  .thumb {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #5b3df5, #ff7ac6 70%, #ffd23f);
   }
-  .denom {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    text-align: center;
-    pointer-events: none;
-  }
-  .from {
-    font-size: 0.8rem;
-    font-weight: 700;
+  .pv-kind {
+    font-size: 0.85rem;
     color: var(--muted);
   }
-  .amount {
-    font-size: clamp(3.6rem, 11vw, 6rem);
-    font-variation-settings: 'opsz' 96;
-    line-height: 0.95;
-    color: var(--green);
+  .pv-title {
+    font-weight: 650;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
   }
-  .unit {
-    font: 700 0.95rem/1 var(--font-body);
-    letter-spacing: 0.2em;
-    color: var(--red);
+  .pv-title a {
+    text-decoration: none;
   }
-  .micro {
-    position: absolute;
-    left: calc(var(--u) * 2);
-    right: calc(var(--u) * 2);
-    bottom: calc(var(--u) * 2);
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 6px;
-    letter-spacing: 0.08em;
-    color: var(--green);
-    border-top: 1px solid var(--rule);
-    padding-top: 4px;
+  .pv-title a:hover {
+    text-decoration: underline;
   }
-  .uv-btn {
-    position: absolute;
-    z-index: 3;
-    right: calc(var(--u) * 2);
-    bottom: calc(var(--u) * 3.5);
-    display: inline-flex;
+  .pv-list {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    font-size: 0.95rem;
+  }
+  .pv-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+  }
+  .pv-list li span:first-child {
+    color: var(--muted);
+  }
+  .pv-total {
+    display: flex;
     align-items: center;
-    gap: var(--u);
-    min-height: 40px;
-    padding: 0 calc(var(--u) * 1.5);
-    border: 1.5px solid var(--green);
-    border-radius: 4px;
-    background: var(--paper);
-    color: var(--green);
-    font: 700 0.85rem/1 var(--font-body);
-    cursor: pointer;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
   }
-  .uv-btn[aria-pressed='true'] {
-    background: var(--uv-ink);
-    border-color: var(--uv-ink);
-    color: var(--uv-ground);
+  .pv-label {
+    font-size: 0.85rem;
+    color: var(--muted);
   }
-
-  /* Fluorescent layer: closed by default, revealed by the lamp. */
-  .uv {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    display: grid;
-    align-content: end;
-    padding-bottom: calc(var(--u) * 9);
-    background: var(--uv-ground);
-    color: var(--uv-ink);
-    clip-path: circle(0 at var(--lx) var(--ly));
-    visibility: hidden;
-    transition:
-      clip-path 0.6s var(--ease),
-      visibility 0s 0.6s;
+  .pv-price {
+    font-size: 1.6rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
-  .uv-on .uv {
-    visibility: visible;
-    clip-path: circle(150% at var(--lx) var(--ly));
-    transition: clip-path 0.7s var(--ease);
+  .pv-buy {
+    width: 100%;
+    margin-top: 16px;
   }
-  .uv-follow .uv {
-    clip-path: circle(170px at var(--lx) var(--ly));
-    transition: clip-path 0.15s linear;
-  }
-  .uv-pattern {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    font: 700 11px/1.6 var(--font-body);
-    letter-spacing: 0.3em;
-    word-break: break-all;
-    opacity: 0.2;
-  }
-  .uv-terms {
-    position: relative;
-    display: grid;
-    gap: calc(var(--u) * 2);
-    margin: 0;
-    padding: calc(var(--u) * 3);
-  }
-  .uv-terms div {
-    display: grid;
-    gap: 2px;
-  }
-  .uv-terms dt {
+  .pv-foot {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 14px;
     font-size: 0.8rem;
-    opacity: 0.85;
+    color: var(--muted);
   }
-  .uv-terms dd {
-    margin: 0;
-    font: 600 clamp(1.4rem, 3.4vw, 2.2rem)/1.1 var(--font-display);
+  @keyframes rise {
+    from {
+      transform: translateY(24px) scale(0.98);
+    }
   }
-  @media (min-width: 900px) {
-    .note {
-      padding: calc(var(--u) * 4) calc(var(--u) * 6) calc(var(--u) * 9);
+  @keyframes fade {
+    from {
+      opacity: 0;
     }
-    .face {
-      grid-template-columns: 1.55fr 1fr;
-      align-items: center;
-      min-height: min(62vh, 560px);
+  }
+  @media (min-width: 960px) {
+    .grid {
+      grid-template-columns: 1.25fr 1fr;
+      min-height: 560px;
     }
-    .uv {
-      place-content: center;
-      padding-bottom: 0;
+    .preview {
+      justify-self: end;
+      transform: rotate(1.5deg);
+      animation-name: rise-tilt;
     }
-    .uv-terms {
-      grid-template-columns: 1fr 1fr;
-      column-gap: calc(var(--u) * 8);
+    @keyframes rise-tilt {
+      from {
+        transform: translateY(24px) rotate(1.5deg);
+      }
+      to {
+        transform: rotate(1.5deg);
+      }
+    }
+  }
+  @media (max-width: 959px) {
+    .band {
+      height: 420px;
+    }
+    .band::after {
+      background: linear-gradient(
+        180deg,
+        rgb(247 248 251 / 0.85) 0%,
+        rgb(247 248 251 / 0.6) 60%,
+        var(--bg)
+      );
     }
   }
 </style>
