@@ -15,11 +15,12 @@
   --tether: #26a17b;
 
   --font: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', system-ui, sans-serif;
   --radius: 16px;
   --radius-sm: 10px;
   --shadow: 0 1px 2px rgb(18 24 38 / 0.06), 0 12px 32px -12px rgb(18 24 38 / 0.18);
   --shadow-lg: 0 2px 4px rgb(18 24 38 / 0.06), 0 30px 60px -20px rgb(39 28 120 / 0.3);
-  --wrap: min(1200px, 100% - 32px);
+  --wrap: min(1320px, 100% - clamp(32px, 7vw, 120px));
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
 }
@@ -52,15 +53,18 @@ body {
 h1,
 h2,
 h3 {
-  font-weight: 650;
-  line-height: 1.05;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: 'opsz' 96;
+  line-height: 1.02;
   letter-spacing: -0.035em;
   margin: 0;
   text-wrap: balance;
 }
 h3 {
+  font-variation-settings: 'opsz' 24;
   line-height: 1.15;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 p {
   margin: 0;

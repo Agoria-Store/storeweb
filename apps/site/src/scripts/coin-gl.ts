@@ -114,24 +114,24 @@ export function mountCoin(host: HTMLElement, scrollArea: HTMLElement): boolean {
 
   let scroll = 0;
   const start = performance.now();
-  let last = start;
-  let spin = 0;
   const frame = () => {
-    const now = performance.now();
-    const dt = Math.min((now - last) / 1000, 0.1);
-    last = now;
-    const t = (now - start) / 1000;
+    const t = (performance.now() - start) / 1000;
     const r = scrollArea.getBoundingClientRect();
     const target = Math.min(Math.max(-r.top / Math.max(r.height, 1), 0), 1);
     scroll += (target - scroll) * 0.12;
     pointer.x += (pointer.tx - pointer.x) * 0.06;
     pointer.y += (pointer.ty - pointer.y) * 0.06;
-    spin += dt * 0.35;
 
+    // Sway, never spin: the face stays readable; scrolling out of the hero turns it once.
     const intro = 1 - Math.pow(1 - Math.min(t / 1.6, 1), 4);
-    coin.rotation.y = spin + scroll * Math.PI * 2 + pointer.x * 0.5 + (1 - intro) * -2.4;
-    coin.rotation.x = -0.12 + pointer.y * 0.25;
-    coin.position.y = Math.sin(t * 1.2) * 0.05 + scroll * 0.6;
+    coin.rotation.y =
+      -0.35 +
+      Math.sin(t * 0.7) * 0.28 +
+      pointer.x * 0.35 +
+      scroll * Math.PI * 2 +
+      (1 - intro) * -2.4;
+    coin.rotation.x = -0.1 + Math.sin(t * 0.5) * 0.06 + pointer.y * 0.2;
+    coin.position.y = Math.sin(t * 1.1) * 0.04 + scroll * 0.5;
     coin.scale.setScalar(0.85 + intro * 0.15);
     renderer.render(scene, camera);
   };
@@ -139,7 +139,6 @@ export function mountCoin(host: HTMLElement, scrollArea: HTMLElement): boolean {
   let visible = true;
   let lost = false;
   const loop = () => {
-    last = performance.now();
     renderer.setAnimationLoop(visible && !document.hidden && !lost ? frame : null);
   };
   new IntersectionObserver(([e]) => {

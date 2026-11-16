@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/geist/wght.css';
-import geist from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import '@fontsource-variable/bricolage-grotesque/standard.css';
+import display from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2?url';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -25,7 +26,7 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href={geist} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={display} as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

@@ -21,7 +21,7 @@ A calm, light storefront built around one hero object: a glossy 3D USDT coin. Cr
 
 ## Type
 
-Geist Variable throughout. Hero h1 weight 600, tracking -0.045em, line-height 1. h2 650 / -0.035em. h3 line-height 1.15.
+Headings: Bricolage Grotesque Variable (opsz 96 for h1/h2, 24 for h3), weight 600-700, tracking -0.035 to -0.04em. Body and UI: Geist Variable.
 
 ## Illustrations
 
@@ -39,5 +39,6 @@ A real `thumbnailUrl` always replaces the illustration.
 
 ## Motion
 
-- Hero: SVG coin renders immediately. The three.js coin (`scripts/coin-gl.ts`) loads on the visitor's first move or after 6 s, spins slowly, tilts with the pointer and turns with scroll. Skipped with reduced motion, slow data or no WebGL2.
+- Hero layout: below 1024px centred and stacked; at 1024px+ two columns (copy left, coin right) filling the first screen (min-height 100svh minus nav).
+- Hero coin: SVG coin renders immediately. The three.js coin (`scripts/coin-gl.ts`) loads on the visitor's first move or after 6 s, sways gently facing the viewer, tilts with the pointer and turns once as you scroll out of the hero. Skipped with reduced motion, slow data or no WebGL2.
 - Desktop only (fine pointer): Lenis smooth scroll and the pinned four-step payment section. Below 900px, or without JS, the four steps show as a plain stacked list.
