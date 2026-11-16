@@ -61,12 +61,12 @@ export function initStepper() {
       const label = b.querySelector('[data-copy-label]');
       try {
         await navigator.clipboard.writeText(b.dataset.copy!);
-        if (label) label.textContent = 'Copied ✓';
+        if (label) label.textContent = 'Copied';
         if (status) status.textContent = 'Amount copied';
       } catch {
         if (label) label.textContent = 'Copy not available';
       }
-      setTimeout(() => label && (label.textContent = 'Try it: copy amount'), 1800);
+      setTimeout(() => label && (label.textContent = 'Try copying an example amount'), 1800);
     }),
   );
 

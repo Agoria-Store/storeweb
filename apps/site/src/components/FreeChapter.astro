@@ -10,20 +10,17 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
 <section id="free-chapter" class="section free" aria-labelledby="free-title">
   <div class="wrap layout">
     <div class="copy">
-      <p class="eyebrow" data-reveal>Free chapter</p>
-      <h2 id="free-title" class="h2" data-reveal>Watch a full chapter before you pay.</h2>
-      <p class="lede" data-reveal>
-        [FREE CHAPTER PITCH — what's covered and why it's worth watching.]
-      </p>
+      <h2 id="free-title" class="h2">Watch a full chapter before you pay</h2>
+      <p class="lede">[What the free chapter covers, in one or two plain sentences.]</p>
       {
         course && (
-          <a class="btn btn-ghost" href={productHref(course)} data-reveal>
-            See the full course →
+          <a class="btn btn-secondary" href={productHref(course)}>
+            See every chapter of {course.title}
           </a>
         )
       }
     </div>
-    <div class="player" data-reveal>
+    <div class="player frame">
       {
         freeVideo ? (
           <video
@@ -42,9 +39,11 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
         ) : (
           <div class="ph">
             <span class="play" aria-hidden="true">
-              ▶
+              <svg width="22" height="22" viewBox="0 0 14 14">
+                <path d="M3 1.5v11l9-5.5z" fill="currentColor" />
+              </svg>
             </span>
-            <span>[FREE CHAPTER VIDEO]</span>
+            <span>[Free chapter video goes here]</span>
           </div>
         )
       }
@@ -54,29 +53,25 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
 
 <style>
   .free {
-    background: linear-gradient(180deg, var(--bg), var(--bg-2));
+    background: var(--paper-deep);
   }
   .layout {
     display: grid;
-    gap: 40px;
+    gap: calc(var(--u) * 5);
     align-items: center;
   }
   .copy {
     display: grid;
-    gap: 6px;
     justify-items: start;
   }
   .copy .btn {
-    margin-top: 22px;
+    margin-top: calc(var(--u) * 4);
   }
   .player {
     position: relative;
     aspect-ratio: 16 / 9;
-    border-radius: var(--radius);
-    overflow: hidden;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    box-shadow: 0 40px 80px -40px rgb(45 212 191 / 0.35);
+    background: var(--ink);
+    padding: 10px;
   }
   video {
     width: 100%;
@@ -84,15 +79,13 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
   }
   .ph {
     position: absolute;
-    inset: 0;
+    inset: 10px;
     display: grid;
     place-content: center;
     justify-items: center;
-    gap: 14px;
-    color: var(--muted);
-    font: 600 0.8rem/1 var(--font-head);
-    letter-spacing: 0.1em;
-    background: radial-gradient(60% 70% at 50% 40%, rgb(45 212 191 / 0.16), transparent 70%);
+    gap: calc(var(--u) * 2);
+    color: var(--on-green-muted);
+    background: var(--green-deep);
   }
   .play {
     display: grid;
@@ -100,14 +93,12 @@ const course = (await (await store()).listProducts({ type: 'course' }))[0];
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: var(--teal);
-    color: #04201d;
-    font-size: 1.4rem;
-    box-shadow: 0 0 0 10px rgb(45 212 191 / 0.15);
+    background: var(--paper);
+    color: var(--green);
   }
   @media (min-width: 900px) {
     .layout {
-      grid-template-columns: 0.9fr 1.1fr;
+      grid-template-columns: 0.85fr 1.15fr;
     }
   }
 </style>

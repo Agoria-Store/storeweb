@@ -1,32 +1,26 @@
 ---
 const options = [
   {
-    key: 'download',
     title: 'Download link',
-    body: 'After payment you get a private link to download the files. Links expire and have a limited number of downloads — save your files once you have them.',
-    points: ['Keep the files', 'Watch offline', 'Link expires: [EXPIRY TIME]'],
+    body: 'After payment you get a private link to download the files. The link expires and allows a limited number of downloads, so save your files once you have them.',
+    points: ['Keep the files', 'Watch offline', 'Link expires after [EXPIRY TIME]'],
   },
   {
-    key: 'telegram',
     title: 'Private Telegram channel',
-    body: 'After payment, send your order ID to our bot. It replies with a one-time invite to the course channel, valid for you only.',
-    points: ['Stream inside Telegram', 'Single-use invite', 'Updates posted in the channel'],
+    body: 'After payment, send your order ID to our Telegram bot. It replies with a one-time invite to the course channel that only you can use.',
+    points: ['Watch inside Telegram', 'Invite works once', 'New lessons posted in the channel'],
   },
 ];
 ---
 
 <section class="section" aria-labelledby="delivery-title">
   <div class="wrap">
-    <p class="eyebrow" data-reveal>Delivery</p>
-    <h2 id="delivery-title" class="h2" data-reveal>Two ways to get your course.</h2>
-    <p class="lede" data-reveal>Each product page says which one it uses.</p>
-    <div class="grid">
+    <h2 id="delivery-title" class="h2">How you receive the course</h2>
+    <p class="lede">Each course page says which of the two it uses.</p>
+    <div class="stubs">
       {
         options.map((o) => (
-          <article class={`opt ${o.key}`} data-reveal>
-            <span class="icon" aria-hidden="true">
-              {o.key === 'download' ? '↓' : '➤'}
-            </span>
+          <article class="stub">
             <h3>{o.title}</h3>
             <p>{o.body}</p>
             <ul>
@@ -42,57 +36,57 @@ const options = [
 </section>
 
 <style>
-  .grid {
+  .stubs {
     display: grid;
-    gap: 18px;
-    margin-top: 40px;
+    margin-top: calc(var(--u) * 5);
+    border: 2px solid var(--green);
   }
-  .opt {
-    --c: 45 212 191;
+  .stub {
     display: grid;
-    gap: 14px;
+    gap: calc(var(--u) * 1.5);
     align-content: start;
-    padding: 28px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    background:
-      radial-gradient(70% 80% at 0% 0%, rgb(var(--c) / 0.12), transparent 60%), var(--surface);
+    padding: calc(var(--u) * 4);
   }
-  .opt.telegram {
-    --c: 56 189 248;
-  }
-  .icon {
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: rgb(var(--c) / 0.15);
-    color: rgb(var(--c));
-    font-size: 1.3rem;
+  /* Perforation between the two stubs. */
+  .stub + .stub {
+    border-top: 2px dotted var(--green);
   }
   h3 {
-    font-size: 1.4rem;
+    font-size: 1.9rem;
+    color: var(--green);
   }
   p {
     color: var(--muted);
+    max-width: 52ch;
   }
   ul {
     display: grid;
-    gap: 8px;
+    gap: 6px;
     padding: 0;
-    margin: 6px 0 0;
+    margin: var(--u) 0 0;
     list-style: none;
-    font-size: 0.925rem;
+  }
+  li {
+    display: flex;
+    gap: var(--u);
+    align-items: baseline;
   }
   li::before {
-    content: '✓';
-    margin-right: 10px;
-    color: rgb(var(--c));
+    content: '';
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--red);
+    border-radius: 50%;
+    translate: 0 -1px;
   }
   @media (min-width: 760px) {
-    .grid {
+    .stubs {
       grid-template-columns: 1fr 1fr;
+    }
+    .stub + .stub {
+      border-top: 0;
+      border-left: 2px dotted var(--green);
     }
   }
 </style>

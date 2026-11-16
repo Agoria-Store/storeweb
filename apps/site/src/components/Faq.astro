@@ -1,39 +1,42 @@
 ---
 import { TELEGRAM_BOT_URL } from '../lib/store';
 const faqs = [
-  { q: 'Can I get a refund?', a: '[REFUND POLICY — to be confirmed by the team.]' },
+  { q: 'Can I get a refund?', a: '[Refund policy, to be confirmed.]' },
   {
     q: 'What if I send on the wrong network?',
-    a: 'Only USDT on TRC20 is accepted. Payments on other networks may not be detected automatically. Contact us with your order ID and transaction hash and we will review it manually. [WRONG-NETWORK POLICY — to be confirmed.]',
+    a: 'Only USDT on TRC20 is accepted. Payments on other networks may not be detected automatically. Message us with your order ID and transaction hash, and we will review it by hand. [Wrong-network policy, to be confirmed.]',
   },
   {
     q: 'How long does confirmation take?',
-    a: 'Access is sent once the payment is confirmed on the Tron network. [TYPICAL CONFIRMATION TIME — to be confirmed with the checkout platform.]',
+    a: 'Your course is sent once the payment is confirmed on the Tron network. [Typical confirmation time, to be confirmed with the checkout platform.]',
   },
   {
-    q: 'How are files delivered?',
-    a: 'Either by an expiring download link or a one-time invite to a private Telegram channel. Each product page shows which one applies.',
+    q: 'How are the files delivered?',
+    a: 'Either by an expiring download link or a one-time invite to a private Telegram channel. Each course page shows which one applies.',
   },
   {
-    q: 'What if I underpay or overpay?',
-    a: 'Send the exact amount shown at checkout. If the amount differs, contact us with your order ID. [UNDER/OVERPAYMENT POLICY — to be confirmed.]',
+    q: 'What if I send too little or too much?',
+    a: 'Send the exact amount shown at checkout. If the amount is different, message us with your order ID. [Underpayment and overpayment policy, to be confirmed.]',
+  },
+  {
+    q: 'Is this financial advice?',
+    a: 'No. The courses are educational. Trading crypto carries risk, and nothing here promises profits.',
   },
 ];
 ---
 
-<section id="faq" class="section" aria-labelledby="faq-title">
+<section id="faq" class="faq" aria-labelledby="faq-title">
   <div class="wrap layout">
     <div>
-      <p class="eyebrow" data-reveal>FAQ</p>
-      <h2 id="faq-title" class="h2" data-reveal>Questions, answered.</h2>
-      <p class="lede" data-reveal>
-        Still stuck? <a href={TELEGRAM_BOT_URL} rel="noopener">Message us on Telegram</a>.
+      <h2 id="faq-title" class="h2">Questions before you pay</h2>
+      <p class="lede">
+        Something else? <a href={TELEGRAM_BOT_URL} rel="noopener">Ask us on Telegram</a>.
       </p>
     </div>
     <div class="list">
       {
         faqs.map((f) => (
-          <details data-reveal>
+          <details>
             <summary>
               {f.q}
               <span class="plus" aria-hidden="true" />
@@ -54,31 +57,47 @@ const faqs = [
 </script>
 
 <style>
+  .faq {
+    background: var(--green);
+    color: var(--on-green);
+    padding-block: calc(var(--u) * 14) calc(var(--u) * 12);
+  }
+  .faq :focus-visible {
+    outline-color: var(--uv-ink);
+  }
   .layout {
     display: grid;
-    gap: 40px;
+    gap: calc(var(--u) * 5);
+  }
+  .lede {
+    color: var(--on-green-muted);
   }
   .lede a {
-    color: var(--teal);
-  }
-  .list {
-    display: grid;
+    color: var(--on-green);
+    font-weight: 700;
   }
   details {
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid rgb(233 237 226 / 0.25);
+  }
+  details:first-child {
+    border-top: 1px solid rgb(233 237 226 / 0.25);
   }
   summary {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    padding: 22px 0;
-    font: 600 1.1rem/1.35 var(--font-head);
+    gap: calc(var(--u) * 2.5);
+    padding: calc(var(--u) * 2.5) 0;
+    font: 600 1.35rem/1.3 var(--font-display);
     cursor: pointer;
     list-style: none;
   }
   summary::-webkit-details-marker {
     display: none;
+  }
+  summary:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
   }
   .plus {
     position: relative;
@@ -92,7 +111,7 @@ const faqs = [
     position: absolute;
     inset: 6px 0 auto;
     height: 2px;
-    background: var(--teal);
+    background: var(--on-green);
     transition: transform 0.3s var(--ease);
   }
   .plus::after {
@@ -102,8 +121,8 @@ const faqs = [
     transform: rotate(0deg);
   }
   .panel {
-    padding: 0 0 22px;
-    color: var(--muted);
+    padding: 0 0 calc(var(--u) * 3);
+    color: var(--on-green-muted);
     max-width: 62ch;
   }
   @media (min-width: 900px) {

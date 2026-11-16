@@ -14,25 +14,26 @@ const DEFAULT = types.includes('course') ? 'course' : 'all';
   <div class="wrap">
     <div class="head">
       <div>
-        <p class="eyebrow" data-reveal>Catalog</p>
-        <h2 id="courses-title" class="h2" data-reveal>
-          Buy the whole course, or just what you need.
-        </h2>
+        <h2 id="courses-title" class="h2">Buy the whole course, or only what you need</h2>
+        <p class="lede">
+          Every course is also sold chapter by chapter. The full course always costs less than its
+          chapters added together.
+        </p>
       </div>
-      <div class="filters" role="group" aria-label="Filter by type" data-filters data-reveal>
+      <div class="filters" role="group" aria-label="Show" data-filters>
         {
           ['all', ...types].map((t) => (
             <button type="button" data-filter={t} aria-pressed={t === DEFAULT ? 'true' : 'false'}>
-              {t === 'all' ? 'All' : `${TYPE_LABEL[t as ProductType]}s`}
+              {t === 'all' ? 'Everything' : `${TYPE_LABEL[t as ProductType]}s`}
             </button>
           ))
         }
       </div>
     </div>
     <p class="sr-only" aria-live="polite" data-filter-status></p>
-    <div class="grid" data-grid data-default={DEFAULT}>
+    <ul class="ledger" data-grid data-default={DEFAULT}>
       {products.map((p) => <CourseCard product={p} />)}
-    </div>
+    </ul>
   </div>
 </section>
 
@@ -44,49 +45,45 @@ const DEFAULT = types.includes('course') ? 'course' : 'all';
 <style>
   .head {
     display: grid;
-    gap: 28px;
-    margin-bottom: 40px;
+    gap: calc(var(--u) * 4);
+    margin-bottom: calc(var(--u) * 5);
   }
   .filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 5px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: var(--bg-2);
+    gap: calc(var(--u) * 3);
     justify-self: start;
+    align-self: end;
   }
   .filters button {
-    min-height: 40px;
-    padding: 0 16px;
+    min-height: 44px;
+    padding: 0 2px;
     border: 0;
-    border-radius: 999px;
-    background: transparent;
+    border-bottom: 2px solid transparent;
+    background: none;
     color: var(--muted);
-    font: 600 0.875rem/1 var(--font-head);
+    font: 700 1rem/1 var(--font-body);
     cursor: pointer;
-    transition:
-      background-color 0.25s,
-      color 0.25s;
+  }
+  .filters button:hover {
+    color: var(--ink);
   }
   .filters button[aria-pressed='true'] {
-    background: var(--surface-2);
-    color: var(--text);
-    box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.35);
+    color: var(--green);
+    border-bottom-color: var(--red);
   }
-  .grid {
-    display: grid;
-    gap: 18px;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  .ledger {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
   }
-  .grid :global([data-card][hidden]) {
+  .ledger :global([data-card][hidden]) {
     display: none;
   }
   @media (min-width: 900px) {
     .head {
       grid-template-columns: 1fr auto;
-      align-items: end;
     }
   }
 </style>

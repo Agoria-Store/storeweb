@@ -1,6 +1,11 @@
 import { prefersReducedMotion } from './env';
 
-/** Loads GSAP + Lenis after first paint, only when motion is allowed. Without it, content is static and fully visible. */
+type Motion = {
+  gsap: typeof import('gsap').gsap;
+  ScrollTrigger: typeof import('gsap/ScrollTrigger').ScrollTrigger;
+};
+
+/** Loads GSAP + Lenis after first paint, only when motion is allowed. Content is visible without it. */
 export function initMotion() {
   if (prefersReducedMotion()) return;
   const start = () => void load();
@@ -16,63 +21,26 @@ async function load() {
   ]);
   gsap.registerPlugin(ScrollTrigger);
 
-  const lenis = new Lenis({ lerp: 0.11 });
+  const lenis = new Lenis({ lerp: 0.12 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
   document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) =>
     a.addEventListener('click', (e) => {
-      const target = a.hash && document.querySelector(a.hash);
+      const target = a.hash && document.getElementById(a.hash.slice(1));
       if (!target) return;
       e.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -72 });
+      lenis.scrollTo(target, { offset: -72 });
       history.replaceState(null, '', a.hash);
     }),
   );
 
-  ScrollTrigger.batch('[data-reveal]', {
-    start: 'top 88%',
-    once: true,
-    onEnter: (els) =>
-      gsap.fromTo(
-        els,
-        { autoAlpha: 0, y: 32 },
-        { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08 },
-      ),
-  });
-
-  document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
-    const end = Number(el.dataset.count);
-    const obj = { v: 0 };
-    gsap.to(obj, {
-      v: end,
-      duration: 1.4,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
-      onUpdate: () => (el.textContent = String(Math.round(obj.v))),
-    });
-  });
-
-  document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
-    gsap.to(el, {
-      yPercent: Number(el.dataset.parallax) || 12,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: el.parentElement,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
-      },
-    });
-  });
-
-  window.dispatchEvent(new CustomEvent('motion:ready', { detail: { gsap, ScrollTrigger } }));
-  (window as unknown as { __motion?: unknown }).__motion = { gsap, ScrollTrigger };
+  const motion: Motion = { gsap, ScrollTrigger };
+  (window as unknown as { __motion?: Motion }).__motion = motion;
+  window.dispatchEvent(new CustomEvent('motion:ready', { detail: motion }));
 
   // Pinning adds spacer height, so re-resolve a deep-linked anchor once layout settles.
   ScrollTrigger.refresh();
-  const target =
-    location.hash &&
-    document.querySelector<HTMLElement>(CSS.escape(location.hash).replace(/^\\#/, '#'));
+  const target = location.hash && document.getElementById(location.hash.slice(1));
   if (target) lenis.scrollTo(target, { offset: -72, immediate: true });
 }

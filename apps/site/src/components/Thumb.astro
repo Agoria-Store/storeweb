@@ -2,27 +2,18 @@
 import type { Product } from '@course-store/store-client';
 interface Props {
   product: Product;
-  eager?: boolean;
+  size?: 'sm' | 'lg';
 }
-const { product: p, eager = false } = Astro.props;
-const seed = [...p.id].reduce((a, c) => a + c.charCodeAt(0), 0);
-const hue = seed % 2 ? '45 212 191' : '245 158 11';
+const { product: p, size = 'sm' } = Astro.props;
 ---
 
-<div class="thumb" style={`--h: ${hue}; --a: ${(seed * 37) % 360}deg`}>
+<div class={`specimen ${size}`}>
   {
     p.thumbnailUrl ? (
-      <img
-        src={p.thumbnailUrl}
-        alt=""
-        width="640"
-        height="400"
-        loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
-      />
+      <img src={p.thumbnailUrl} alt="" width="640" height="400" loading="lazy" decoding="async" />
     ) : (
-      <span class="ph" aria-hidden="true">
-        [THUMBNAIL]
+      <span class="den num" aria-hidden="true">
+        {p.priceUsdt}
       </span>
     )
   }
@@ -32,7 +23,9 @@ const hue = seed % 2 ? '45 212 191' : '245 158 11';
         <video muted loop playsinline preload="none" data-src={p.previewUrl} aria-hidden="true" />
         <button class="play" type="button" data-preview-toggle aria-pressed="false">
           <span class="sr-only">Play preview of {p.title}</span>
-          <span aria-hidden="true">▶</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M3 1.5v11l9-5.5z" fill="currentColor" />
+          </svg>
         </button>
       </>
     )
@@ -40,25 +33,37 @@ const hue = seed % 2 ? '45 212 191' : '245 158 11';
 </div>
 
 <style>
-  .thumb {
+  .specimen {
     position: relative;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-radius: calc(var(--radius) - 6px);
+    border: 1.5px solid var(--green);
+    outline: 1px solid var(--green);
+    outline-offset: -5px;
     background:
-      radial-gradient(80% 90% at 15% 10%, rgb(var(--h) / 0.35), transparent 60%),
-      conic-gradient(from var(--a) at 70% 70%, #0f766e55, #17223b, #0b1222, #0f766e55);
+      repeating-radial-gradient(
+        circle at 78% 50%,
+        transparent 0 5px,
+        rgb(95 163 155 / 0.35) 5px 6px
+      ),
+      var(--paper);
   }
-  .thumb::after {
-    content: '';
+  .lg {
+    outline-offset: -9px;
+  }
+  .den {
     position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-    background-size: 28px 28px;
-    mask-image: linear-gradient(180deg, #000, transparent);
-    pointer-events: none;
+    right: 10%;
+    top: 50%;
+    translate: 0 -50%;
+    font-size: 2rem;
+    color: var(--green);
+    background: var(--paper);
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .lg .den {
+    font-size: clamp(3rem, 8vw, 5rem);
   }
   img,
   video {
@@ -70,29 +75,24 @@ const hue = seed % 2 ? '45 212 191' : '245 158 11';
   }
   video {
     opacity: 0;
-    transition: opacity 0.4s;
+    transition: opacity 0.3s;
   }
   :global(.is-previewing) video {
     opacity: 1;
   }
-  .ph {
-    position: absolute;
-    inset: auto 14px 12px auto;
-    font: 600 0.7rem/1 var(--font-head);
-    letter-spacing: 0.12em;
-    color: rgb(232 237 246 / 0.55);
-  }
   .play {
     position: absolute;
-    left: 12px;
-    bottom: 12px;
+    left: 8px;
+    bottom: 8px;
     z-index: 2;
-    width: 40px;
-    height: 40px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
     border-radius: 50%;
-    border: 1px solid rgb(255 255 255 / 0.2);
-    background: rgb(7 11 22 / 0.6);
-    color: var(--text);
+    background: var(--green);
+    color: var(--paper);
     cursor: pointer;
   }
 </style>

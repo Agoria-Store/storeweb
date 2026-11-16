@@ -1,210 +1,286 @@
 ---
-// Set when real media exists: { webm, mp4, poster } under /public/media.
-const heroVideo = null as null | { webm: string; mp4: string; poster: string };
+import Rosette from './Rosette.astro';
+import { store } from '../lib/store';
+
+const courses = await (await store()).listProducts({ type: 'course' });
+const from = Math.min(...courses.map((c) => c.priceUsdt));
+const micro = 'PAY IN USDT ON THE TRC20 NETWORK ONLY '.repeat(14);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="bg" aria-hidden="true">
-    <div class="poster"></div>
-    {
-      heroVideo ? (
-        <video
-          class="media"
-          muted
-          loop
-          playsinline
-          preload="none"
-          poster={heroVideo.poster}
-          data-hero-video
-        >
-          <source data-src={heroVideo.webm} type="video/webm" />
-          <source data-src={heroVideo.mp4} type="video/mp4" />
-        </video>
-      ) : (
-        <canvas class="media field" data-hero-canvas />
-      )
-    }
-    <div class="grid-lines"></div>
-    <div class="vignette"></div>
-  </div>
+  <div class="wrap">
+    <div class="note frame" data-note>
+      <div class="top serial" aria-hidden="true">
+        <span>SERIES TRC20</span>
+        <span>USDT</span>
+      </div>
 
-  <div class="wrap content">
-    <p class="chip"><span class="dot"></span> Pay with USDT · TRC20</p>
-    <h1 id="hero-title">[BOLD HEADLINE ABOUT THE OUTCOME]</h1>
-    <p class="value">[SHORT VALUE LINE — who it's for and what they get.]</p>
-    <div class="ctas">
-      <a class="btn btn-primary" href="#courses" data-magnetic
-        >Browse courses <span aria-hidden="true">→</span></a
+      <div class="face">
+        <div class="copy">
+          <h1 id="hero-title">[Headline about the outcome for the learner]</h1>
+          <p class="value">
+            [Value line: who the courses are for and what they will be able to do.] Buy the full
+            course, one chapter or a single video.
+          </p>
+          <div class="ctas">
+            <a class="btn btn-primary" href="#courses">Browse courses</a>
+            <a class="btn btn-secondary" href="#free-chapter">Get a free chapter</a>
+          </div>
+        </div>
+
+        <div class="seal" data-rosette>
+          <Rosette />
+          <p class="denom">
+            <span class="from">Full courses from</span>
+            <span class="num amount">{from}</span>
+            <span class="unit">USDT</span>
+          </p>
+        </div>
+      </div>
+
+      <p class="micro" aria-hidden="true">{micro}</p>
+
+      <button
+        class="uv-btn"
+        type="button"
+        data-uv-toggle
+        aria-pressed="false"
+        aria-controls="uv-terms"
       >
-      <a class="btn btn-ghost" href="#free-chapter" data-magnetic>Get a free chapter</a>
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"></circle>
+          <path
+            d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"></path>
+        </svg>
+        <span data-uv-label>Check under UV light</span>
+      </button>
+
+      <div class="uv" id="uv-terms" role="region" aria-label="Payment terms under UV light">
+        <div class="uv-pattern" aria-hidden="true">{'USDT TRC20 '.repeat(160)}</div>
+        <dl class="uv-terms">
+          <div><dt>Currency</dt><dd>USDT only</dd></div>
+          <div><dt>Network</dt><dd>TRC20 (Tron) only</dd></div>
+          <div><dt>Checkout</dt><dd>Hosted by our payment partner</dd></div>
+          <div><dt>Delivery</dt><dd>Download link or one-time Telegram invite</dd></div>
+        </dl>
+      </div>
     </div>
-    <ul class="facts" aria-label="Buying options">
-      <li>Full course</li>
-      <li>Single chapter</li>
-      <li>Single video</li>
-    </ul>
   </div>
-  <a class="scroll-cue" href="#courses" aria-label="Scroll to courses"><span></span></a>
 </section>
 
 <script>
-  import { initHeroCanvas } from '../scripts/hero-canvas';
+  import { initUv } from '../scripts/uv';
   import { richMotionAllowed } from '../scripts/env';
+  import { draw2d } from '../lib/guilloche';
 
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-hero-canvas]');
-  if (canvas) initHeroCanvas(canvas);
+  const note = document.querySelector<HTMLElement>('[data-note]');
+  const seal = document.querySelector<HTMLElement>('[data-rosette]');
+  const flat = document.querySelector<HTMLCanvasElement>('[data-rosette-2d]');
+  if (note) initUv(note);
 
-  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
-  if (video && richMotionAllowed()) {
-    video
-      .querySelectorAll<HTMLSourceElement>('source[data-src]')
-      .forEach((s) => (s.src = s.dataset.src!));
-    video.load();
-    video
-      .play()
-      .then(() => video.classList.add('on'))
-      .catch(() => {});
+  if (note && seal && flat) {
+    if (richMotionAllowed()) {
+      const go = () =>
+        import('../scripts/rosette-gl').then(({ mountRosette }) => {
+          if (!mountRosette(seal, note)) draw2d(flat);
+        });
+      if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 1200 });
+      else setTimeout(go, 200);
+    } else {
+      draw2d(flat);
+    }
   }
 </script>
 
 <style>
   .hero {
+    padding: calc(var(--u) * 3) 0 calc(var(--u) * 6);
+  }
+  .note {
+    --lx: 50%;
+    --ly: 50%;
     position: relative;
-    min-height: 100svh;
-    display: grid;
-    align-items: center;
-    padding: 112px 0 96px;
     overflow: hidden;
-    isolation: isolate;
-  }
-  .bg {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-  .poster,
-  .media {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .poster {
+    padding: calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 7);
     background:
-      radial-gradient(60% 50% at 20% 30%, rgb(45 212 191 / 0.28), transparent 70%),
-      radial-gradient(45% 45% at 80% 25%, rgb(15 118 110 / 0.35), transparent 70%),
-      radial-gradient(40% 40% at 65% 80%, rgb(245 158 11 / 0.18), transparent 70%), var(--bg);
+      radial-gradient(ellipse 60% 80% at 82% 45%, var(--paper-deep), transparent 70%), var(--paper);
   }
-  .field {
-    filter: blur(28px) saturate(120%);
-    transform: scale(1.15);
-    opacity: 0;
-    transition: opacity 1.2s ease;
+  .top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
   }
-  .field[data-live] {
-    opacity: 1;
-  }
-  video.media {
-    opacity: 0;
-    transition: opacity 0.8s;
-  }
-  video.media.on {
-    opacity: 0.55;
-  }
-  .grid-lines {
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 75%);
-  }
-  .vignette {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 55%, var(--bg));
-  }
-  .content {
+  .face {
     display: grid;
-    justify-items: start;
-    gap: 22px;
-  }
-  .dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--teal);
-    box-shadow: 0 0 0 4px rgb(45 212 191 / 0.18);
+    gap: calc(var(--u) * 4);
+    padding-top: calc(var(--u) * 4);
   }
   h1 {
-    font-size: clamp(2.6rem, 9vw, 5.6rem);
-    max-width: 15ch;
-    letter-spacing: -0.035em;
-    background: linear-gradient(180deg, #fff 30%, #b9c6da);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-size: clamp(2.6rem, 8.4vw, 5.6rem);
+    font-variation-settings: 'opsz' 96;
+    color: var(--green);
+    max-width: 13ch;
   }
   .value {
-    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    margin-top: calc(var(--u) * 3);
+    max-width: 44ch;
+    font-size: 1.15rem;
     color: var(--muted);
-    max-width: 46ch;
   }
   .ctas {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 6px;
+    gap: calc(var(--u) * 1.5);
+    margin-top: calc(var(--u) * 4);
   }
-  .facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 20px;
-    padding: 0;
-    margin: 18px 0 0;
-    list-style: none;
+  .seal {
+    position: relative;
+    width: min(100%, 420px);
+    aspect-ratio: 1;
+    justify-self: center;
+  }
+  .seal :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .seal[data-live] :global(.rosette-2d) {
+    display: none;
+  }
+  .denom {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    text-align: center;
+    pointer-events: none;
+  }
+  .from {
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--muted);
-    font-size: 0.875rem;
   }
-  .facts li::before {
-    content: '✓';
-    color: var(--teal);
-    margin-right: 8px;
+  .amount {
+    font-size: clamp(3.6rem, 11vw, 6rem);
+    font-variation-settings: 'opsz' 96;
+    line-height: 0.95;
+    color: var(--green);
   }
-  .scroll-cue {
+  .unit {
+    font: 700 0.95rem/1 var(--font-body);
+    letter-spacing: 0.2em;
+    color: var(--red);
+  }
+  .micro {
     position: absolute;
-    left: 50%;
-    bottom: 26px;
-    width: 26px;
-    height: 42px;
-    margin-left: -13px;
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
+    left: calc(var(--u) * 2);
+    right: calc(var(--u) * 2);
+    bottom: calc(var(--u) * 2);
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 6px;
+    letter-spacing: 0.08em;
+    color: var(--green);
+    border-top: 1px solid var(--rule);
+    padding-top: 4px;
   }
-  .scroll-cue span {
+  .uv-btn {
     position: absolute;
-    left: 50%;
-    top: 8px;
-    width: 4px;
-    height: 8px;
-    margin-left: -2px;
-    border-radius: 2px;
-    background: var(--teal);
-    animation: cue 1.8s var(--ease) infinite;
+    z-index: 3;
+    right: calc(var(--u) * 2);
+    bottom: calc(var(--u) * 3.5);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--u);
+    min-height: 40px;
+    padding: 0 calc(var(--u) * 1.5);
+    border: 1.5px solid var(--green);
+    border-radius: 4px;
+    background: var(--paper);
+    color: var(--green);
+    font: 700 0.85rem/1 var(--font-body);
+    cursor: pointer;
   }
-  @keyframes cue {
-    0% {
-      transform: translateY(0);
-      opacity: 1;
+  .uv-btn[aria-pressed='true'] {
+    background: var(--uv-ink);
+    border-color: var(--uv-ink);
+    color: var(--uv-ground);
+  }
+
+  /* Fluorescent layer: closed by default, revealed by the lamp. */
+  .uv {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    align-content: end;
+    padding-bottom: calc(var(--u) * 9);
+    background: var(--uv-ground);
+    color: var(--uv-ink);
+    clip-path: circle(0 at var(--lx) var(--ly));
+    visibility: hidden;
+    transition:
+      clip-path 0.6s var(--ease),
+      visibility 0s 0.6s;
+  }
+  .uv-on .uv {
+    visibility: visible;
+    clip-path: circle(150% at var(--lx) var(--ly));
+    transition: clip-path 0.7s var(--ease);
+  }
+  .uv-follow .uv {
+    clip-path: circle(170px at var(--lx) var(--ly));
+    transition: clip-path 0.15s linear;
+  }
+  .uv-pattern {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    font: 700 11px/1.6 var(--font-body);
+    letter-spacing: 0.3em;
+    word-break: break-all;
+    opacity: 0.2;
+  }
+  .uv-terms {
+    position: relative;
+    display: grid;
+    gap: calc(var(--u) * 2);
+    margin: 0;
+    padding: calc(var(--u) * 3);
+  }
+  .uv-terms div {
+    display: grid;
+    gap: 2px;
+  }
+  .uv-terms dt {
+    font-size: 0.8rem;
+    opacity: 0.85;
+  }
+  .uv-terms dd {
+    margin: 0;
+    font: 600 clamp(1.4rem, 3.4vw, 2.2rem)/1.1 var(--font-display);
+  }
+  @media (min-width: 900px) {
+    .note {
+      padding: calc(var(--u) * 4) calc(var(--u) * 6) calc(var(--u) * 9);
     }
-    80% {
-      transform: translateY(14px);
-      opacity: 0;
+    .face {
+      grid-template-columns: 1.55fr 1fr;
+      align-items: center;
+      min-height: min(62vh, 560px);
     }
-    100% {
-      opacity: 0;
+    .uv {
+      place-content: center;
+      padding-bottom: 0;
+    }
+    .uv-terms {
+      grid-template-columns: 1fr 1fr;
+      column-gap: calc(var(--u) * 8);
     }
   }
 </style>

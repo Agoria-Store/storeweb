@@ -9,49 +9,59 @@ import { BRAND, TELEGRAM_BOT_URL } from '../lib/store';
       <p class="small">[ONE-LINE FOOTER DESCRIPTION]</p>
     </div>
     <div class="cta">
-      <p class="small">Browse and buy right inside Telegram.</p>
-      <a class="btn btn-primary" href={TELEGRAM_BOT_URL} rel="noopener" data-magnetic>
-        Open the Telegram bot →
-      </a>
+      <p class="small">Browse and buy inside Telegram, and claim channel access there.</p>
+      <a class="btn" href={TELEGRAM_BOT_URL} rel="noopener">Open the Telegram bot</a>
     </div>
   </div>
   <div class="wrap legal small">
     <span>© {new Date().getFullYear()} {BRAND}</span>
-    <span>Payments in USDT (TRC20) via our checkout partner.</span>
+    <span>Payments in USDT on TRC20, processed by our checkout partner.</span>
+    <span>Educational content only. Not financial advice.</span>
   </div>
 </footer>
 
 <style>
   .footer {
-    border-top: 1px solid var(--line);
-    padding: 64px 0 32px;
-    background: var(--bg-2);
+    background: var(--green-deep);
+    color: var(--on-green);
+    padding: calc(var(--u) * 8) 0 calc(var(--u) * 4);
   }
   .grid {
     display: grid;
-    gap: 32px;
+    gap: calc(var(--u) * 4);
   }
   .brand {
-    font: 700 1.4rem/1 var(--font-head);
-    margin-bottom: 10px;
+    font: 600 2rem/1 var(--font-display);
+    margin-bottom: var(--u);
   }
   .small {
-    color: var(--muted);
-    font-size: 0.9rem;
+    color: var(--on-green-muted);
+    font-size: 0.95rem;
   }
   .cta {
     display: grid;
-    gap: 14px;
+    gap: calc(var(--u) * 2);
     justify-items: start;
+  }
+  .btn {
+    background: var(--paper);
+    color: var(--green);
+    border-color: var(--paper);
+  }
+  .btn:hover {
+    background: #fff;
+  }
+  :focus-visible {
+    outline-color: var(--uv-ink);
   }
   .legal {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 8px;
-    margin-top: 48px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
+    gap: var(--u) calc(var(--u) * 3);
+    margin-top: calc(var(--u) * 6);
+    padding-top: calc(var(--u) * 2.5);
+    border-top: 1px solid rgb(233 237 226 / 0.25);
   }
   @media (min-width: 760px) {
     .grid {
@@ -60,6 +70,7 @@ import { BRAND, TELEGRAM_BOT_URL } from '../lib/store';
     }
     .cta {
       justify-items: end;
+      text-align: right;
     }
   }
 </style>

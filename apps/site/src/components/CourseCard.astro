@@ -7,100 +7,60 @@ interface Props {
   product: Listed;
 }
 const { product: p } = Astro.props;
-const unit = p.type === 'bundle' ? 'items' : 'chapters';
+const unit = p.type === 'bundle' ? 'products' : 'chapters';
+const delivery = p.delivery === 'telegram_channel' ? 'Telegram channel' : 'download link';
+const kind = [
+  TYPE_LABEL[p.type],
+  p.childCount > 0 ? `${p.childCount} ${unit}` : null,
+  `delivered by ${delivery}`,
+]
+  .filter(Boolean)
+  .join(', ');
 ---
 
-<article class="card" data-card data-type={p.type} data-reveal>
-  <div class="inner">
-    <Thumb product={p} />
-    <div class="body">
-      <div class="meta">
-        <span class="chip">{TYPE_LABEL[p.type]}</span>
-        {
-          p.childCount > 0 && (
-            <span class="count">
-              {p.childCount} {unit}
-            </span>
-          )
-        }
-      </div>
-      <h3><a href={productHref(p)} class="stretched">{p.title}</a></h3>
-      <p class="desc">{p.description}</p>
-      <div class="foot">
-        <span class="money price">{formatUsdt(p.priceUsdt)}</span>
-        {p.savings > 0 && <span class="save">Save {p.savings}%</span>}
-      </div>
-    </div>
-    <span class="glare" aria-hidden="true"></span>
+<li class="row" data-card data-type={p.type}>
+  <Thumb product={p} />
+  <div class="what">
+    <p class="kind">{kind}</p>
+    <h3><a href={productHref(p)} class="stretched">{p.title}</a></h3>
+    <p class="desc">{p.description}</p>
   </div>
-</article>
+  <div class="price">
+    <span class="num amount">{p.priceUsdt}</span>
+    <span class="unit">USDT</span>
+    {
+      p.savings > 0 && (
+        <span class="save serial">
+          {p.savings}% less than buying {unit} separately
+        </span>
+      )
+    }
+  </div>
+  <a class="btn btn-buy buy" href={p.checkoutUrl} rel="noopener">
+    Buy<span class="sr-only"> {p.title} for {formatUsdt(p.priceUsdt)}</span>
+  </a>
+</li>
 
 <style>
-  .card {
-    --rx: 0deg;
-    --ry: 0deg;
-    perspective: 900px;
-  }
-  .inner {
+  .row {
     position: relative;
-    height: 100%;
     display: grid;
-    grid-template-rows: auto 1fr;
-    padding: 8px;
-    border-radius: var(--radius);
-    background: linear-gradient(180deg, var(--surface), var(--bg-2));
-    border: 1px solid var(--line);
-    transform: rotateX(var(--rx)) rotateY(var(--ry));
-    transition:
-      transform 0.5s var(--ease),
-      border-color 0.3s,
-      box-shadow 0.4s;
-    transform-style: preserve-3d;
+    grid-template-columns: 112px 1fr;
+    gap: calc(var(--u) * 2);
+    padding: calc(var(--u) * 3) 0;
+    border-top: 1px solid var(--rule);
+    transition: background-color 0.2s;
   }
-  .card:hover .inner,
-  .card:focus-within .inner {
-    border-color: rgb(45 212 191 / 0.4);
-    box-shadow: 0 30px 60px -30px rgb(45 212 191 / 0.35);
+  .row:hover {
+    background: rgb(221 229 216 / 0.6);
   }
-  .card.tilting .inner {
-    transition:
-      transform 0.12s linear,
-      border-color 0.3s,
-      box-shadow 0.4s;
-  }
-  .glare {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background: radial-gradient(
-      400px circle at var(--gx, 50%) var(--gy, 0%),
-      rgb(255 255 255 / 0.07),
-      transparent 45%
-    );
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .card.tilting .glare {
-    opacity: 1;
-  }
-  .body {
-    display: grid;
-    gap: 10px;
-    align-content: start;
-    padding: 16px 12px 12px;
-  }
-  .meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .count {
+  .kind {
+    font-size: 0.9rem;
     color: var(--muted);
-    font-size: 0.8rem;
   }
   h3 {
-    font-size: 1.3rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-top: 4px;
   }
   .stretched {
     text-decoration: none;
@@ -109,27 +69,64 @@ const unit = p.type === 'bundle' ? 'items' : 'chapters';
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 1;
+  }
+  .stretched:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
   }
   .desc {
+    margin-top: var(--u);
     color: var(--muted);
-    font-size: 0.925rem;
-  }
-  .foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 6px;
+    max-width: 52ch;
   }
   .price {
-    font-size: 1.15rem;
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--u);
+  }
+  .amount {
+    font-size: 2.4rem;
+    color: var(--green);
+    line-height: 1;
+  }
+  .unit {
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 0.12em;
+    font-size: 0.85rem;
   }
   .save {
-    font: 600 0.75rem/1 var(--font-head);
-    padding: 6px 10px;
-    border-radius: 999px;
-    color: var(--amber);
-    background: rgb(245 158 11 / 0.12);
-    border: 1px solid rgb(245 158 11 / 0.3);
+    flex-basis: 100%;
+    margin-top: 6px;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+  .buy {
+    grid-column: 2;
+    position: relative;
+    z-index: 1;
+    justify-self: start;
+    min-width: 120px;
+  }
+  @media (min-width: 900px) {
+    .row {
+      grid-template-columns: 176px 1fr 220px 140px;
+      align-items: center;
+      gap: calc(var(--u) * 4);
+      padding-inline: var(--u);
+    }
+    .price,
+    .buy {
+      grid-column: auto;
+    }
+    .price {
+      justify-content: flex-end;
+      text-align: right;
+    }
+    .buy {
+      justify-self: end;
+    }
   }
 </style>
