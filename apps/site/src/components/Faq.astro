@@ -1,0 +1,114 @@
+---
+import { TELEGRAM_BOT_URL } from '../lib/store';
+const faqs = [
+  { q: 'Can I get a refund?', a: '[REFUND POLICY — to be confirmed by the team.]' },
+  {
+    q: 'What if I send on the wrong network?',
+    a: 'Only USDT on TRC20 is accepted. Payments on other networks may not be detected automatically. Contact us with your order ID and transaction hash and we will review it manually. [WRONG-NETWORK POLICY — to be confirmed.]',
+  },
+  {
+    q: 'How long does confirmation take?',
+    a: 'Access is sent once the payment is confirmed on the Tron network. [TYPICAL CONFIRMATION TIME — to be confirmed with the checkout platform.]',
+  },
+  {
+    q: 'How are files delivered?',
+    a: 'Either by an expiring download link or a one-time invite to a private Telegram channel. Each product page shows which one applies.',
+  },
+  {
+    q: 'What if I underpay or overpay?',
+    a: 'Send the exact amount shown at checkout. If the amount differs, contact us with your order ID. [UNDER/OVERPAYMENT POLICY — to be confirmed.]',
+  },
+];
+---
+
+<section id="faq" class="section" aria-labelledby="faq-title">
+  <div class="wrap layout">
+    <div>
+      <p class="eyebrow" data-reveal>FAQ</p>
+      <h2 id="faq-title" class="h2" data-reveal>Questions, answered.</h2>
+      <p class="lede" data-reveal>
+        Still stuck? <a href={TELEGRAM_BOT_URL} rel="noopener">Message us on Telegram</a>.
+      </p>
+    </div>
+    <div class="list">
+      {
+        faqs.map((f) => (
+          <details data-reveal>
+            <summary>
+              {f.q}
+              <span class="plus" aria-hidden="true" />
+            </summary>
+            <div class="panel">
+              <p>{f.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initAccordion } from '../scripts/accordion';
+  initAccordion(document.querySelector('#faq')!);
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    gap: 40px;
+  }
+  .lede a {
+    color: var(--teal);
+  }
+  .list {
+    display: grid;
+  }
+  details {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    font: 600 1.1rem/1.35 var(--font-head);
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .plus {
+    position: relative;
+    flex: none;
+    width: 14px;
+    height: 14px;
+  }
+  .plus::before,
+  .plus::after {
+    content: '';
+    position: absolute;
+    inset: 6px 0 auto;
+    height: 2px;
+    background: var(--teal);
+    transition: transform 0.3s var(--ease);
+  }
+  .plus::after {
+    transform: rotate(90deg);
+  }
+  details[open] .plus::after {
+    transform: rotate(0deg);
+  }
+  .panel {
+    padding: 0 0 22px;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: 0.8fr 1.2fr;
+    }
+  }
+</style>

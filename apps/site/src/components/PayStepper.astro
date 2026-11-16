@@ -1,0 +1,322 @@
+---
+const steps = [
+  {
+    title: 'Choose TRC20',
+    body: 'At checkout, pick USDT on the TRC20 (Tron) network. Other networks are not supported.',
+  },
+  {
+    title: 'Copy the exact amount',
+    body: 'Checkout shows the exact USDT amount and a TRC20 address for your order. Copy both — send the exact amount.',
+  },
+  {
+    title: 'Send from your wallet',
+    body: 'Paste the address and amount into your wallet or exchange, choose TRC20, and send.',
+  },
+  {
+    title: 'Get access',
+    body: 'Once the payment is confirmed on-chain, you get a download link or a one-time Telegram channel invite.',
+  },
+];
+---
+
+<section id="pay" class="pay" aria-labelledby="pay-title" data-stepper>
+  <div class="pin" data-stepper-pin>
+    <div class="wrap layout">
+      <div class="copy">
+        <p class="eyebrow">How to pay</p>
+        <h2 id="pay-title" class="h2">Paying with USDT, step by step.</h2>
+        <div class="tabs" role="tablist" aria-label="Payment steps" data-tabs>
+          {
+            steps.map((s, i) => (
+              <button
+                role="tab"
+                id={`pay-tab-${i}`}
+                aria-controls={`pay-panel-${i}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                type="button"
+              >
+                <span class="num">{i + 1}</span>
+                <span class="label">{s.title}</span>
+                <span class="bar" aria-hidden="true" />
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="stage">
+        {
+          steps.map((s, i) => (
+            <div
+              role="tabpanel"
+              id={`pay-panel-${i}`}
+              aria-labelledby={`pay-tab-${i}`}
+              class="panel"
+              data-panel
+              hidden={i !== 0}
+            >
+              <div class="screen" aria-hidden="true">
+                {i === 0 && (
+                  <div class="nets">
+                    <span class="net on">USDT · TRC20</span>
+                    <span class="net off">USDT · other networks</span>
+                  </div>
+                )}
+                {i === 1 && (
+                  <div class="fields">
+                    <span class="f">
+                      <small>Amount</small>
+                      <b class="money">[PRICE] USDT</b>
+                    </span>
+                    <span class="f">
+                      <small>TRC20 address</small>
+                      <b>T••••••••••••••••••••[ADDRESS]</b>
+                    </span>
+                  </div>
+                )}
+                {i === 2 && (
+                  <div class="send">
+                    <span class="coin">₮</span>
+                    <span class="trail" />
+                    <span class="coin dest">✓</span>
+                  </div>
+                )}
+                {i === 3 && (
+                  <div class="access">
+                    <span class="pill">Download link</span>
+                    <span class="or">or</span>
+                    <span class="pill tg">Telegram invite</span>
+                  </div>
+                )}
+              </div>
+              <h3>
+                <span class="sr-only">Step {i + 1}: </span>
+                {s.title}
+              </h3>
+              <p>{s.body}</p>
+              {i === 1 && (
+                <button class="btn btn-ghost copy-btn" type="button" data-copy="[PRICE]">
+                  <span data-copy-label>Try it: copy amount</span>
+                </button>
+              )}
+            </div>
+          ))
+        }
+        <p class="sr-only" aria-live="polite" data-copy-status></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initStepper } from '../scripts/stepper';
+  initStepper();
+</script>
+
+<style>
+  .pay {
+    position: relative;
+    background:
+      radial-gradient(50% 60% at 85% 50%, rgb(15 118 110 / 0.22), transparent 70%), var(--bg-2);
+  }
+  .pin {
+    padding-block: clamp(72px, 12vw, 140px);
+  }
+  .layout {
+    display: grid;
+    gap: 40px;
+  }
+  .tabs {
+    display: grid;
+    gap: 6px;
+    margin-top: 32px;
+  }
+  [role='tab'] {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--muted);
+    font: 600 1rem/1.2 var(--font-head);
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      color 0.3s,
+      background-color 0.3s,
+      border-color 0.3s;
+  }
+  [role='tab'][aria-selected='true'] {
+    color: var(--text);
+    background: rgb(255 255 255 / 0.04);
+    border-color: var(--line);
+  }
+  .num {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    font-size: 0.85rem;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+  }
+  [aria-selected='true'] .num {
+    background: var(--teal);
+    color: #04201d;
+    border-color: transparent;
+  }
+  .bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--teal);
+    transform: scaleX(var(--p, 0));
+    transform-origin: left;
+  }
+  .stage {
+    position: relative;
+    min-height: 420px;
+    padding: 24px;
+    border-radius: 24px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--surface), var(--bg));
+  }
+  .panel {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .panel h3 {
+    font-size: 1.5rem;
+    margin-top: 10px;
+  }
+  .panel p {
+    color: var(--muted);
+    max-width: 44ch;
+  }
+  .screen {
+    width: 100%;
+    height: 200px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .nets,
+  .fields,
+  .access {
+    display: grid;
+    gap: 10px;
+    width: min(320px, 85%);
+  }
+  .net {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    font: 600 0.9rem/1 var(--font-head);
+  }
+  .net.on {
+    border-color: var(--teal);
+    background: rgb(45 212 191 / 0.1);
+    color: var(--teal);
+  }
+  .net.off {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+  .f {
+    display: grid;
+    gap: 4px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  .f small {
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+  .f b {
+    font: 600 0.95rem/1.2 var(--font-head);
+    overflow-wrap: anywhere;
+  }
+  .send {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(320px, 85%);
+  }
+  .coin {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #26a17b;
+    color: #fff;
+    font: 700 1.4rem/1 var(--font-head);
+  }
+  .coin.dest {
+    background: var(--teal);
+    color: #04201d;
+  }
+  .trail {
+    flex: 1;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--teal) 0 8px, transparent 8px 16px);
+    background-size: 32px 2px;
+    animation: dash 0.8s linear infinite;
+  }
+  @keyframes dash {
+    to {
+      background-position: 32px 0;
+    }
+  }
+  .access {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    text-align: center;
+  }
+  .pill {
+    padding: 14px 10px;
+    border-radius: 12px;
+    background: rgb(45 212 191 / 0.1);
+    border: 1px solid rgb(45 212 191 / 0.4);
+    font: 600 0.85rem/1.2 var(--font-head);
+  }
+  .pill.tg {
+    background: rgb(56 189 248 / 0.1);
+    border-color: rgb(56 189 248 / 0.4);
+  }
+  .or {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: 0.9fr 1.1fr;
+      align-items: center;
+    }
+    .pin {
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+    }
+  }
+</style>

@@ -1,0 +1,6 @@
+{
+  "name": "bot",
+  "private": true,
+  "type": "module",
+  "scripts": {}
+}

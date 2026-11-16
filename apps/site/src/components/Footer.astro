@@ -1,0 +1,65 @@
+---
+import { BRAND, TELEGRAM_BOT_URL } from '../lib/store';
+---
+
+<footer class="footer">
+  <div class="wrap grid">
+    <div>
+      <p class="brand">{BRAND}</p>
+      <p class="small">[ONE-LINE FOOTER DESCRIPTION]</p>
+    </div>
+    <div class="cta">
+      <p class="small">Browse and buy right inside Telegram.</p>
+      <a class="btn btn-primary" href={TELEGRAM_BOT_URL} rel="noopener" data-magnetic>
+        Open the Telegram bot →
+      </a>
+    </div>
+  </div>
+  <div class="wrap legal small">
+    <span>© {new Date().getFullYear()} {BRAND}</span>
+    <span>Payments in USDT (TRC20) via our checkout partner.</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--line);
+    padding: 64px 0 32px;
+    background: var(--bg-2);
+  }
+  .grid {
+    display: grid;
+    gap: 32px;
+  }
+  .brand {
+    font: 700 1.4rem/1 var(--font-head);
+    margin-bottom: 10px;
+  }
+  .small {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .cta {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+  }
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 760px) {
+    .grid {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+    .cta {
+      justify-items: end;
+    }
+  }
+</style>

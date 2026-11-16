@@ -1,0 +1,98 @@
+---
+import type { Product } from '@course-store/store-client';
+interface Props {
+  product: Product;
+  eager?: boolean;
+}
+const { product: p, eager = false } = Astro.props;
+const seed = [...p.id].reduce((a, c) => a + c.charCodeAt(0), 0);
+const hue = seed % 2 ? '45 212 191' : '245 158 11';
+---
+
+<div class="thumb" style={`--h: ${hue}; --a: ${(seed * 37) % 360}deg`}>
+  {
+    p.thumbnailUrl ? (
+      <img
+        src={p.thumbnailUrl}
+        alt=""
+        width="640"
+        height="400"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    ) : (
+      <span class="ph" aria-hidden="true">
+        [THUMBNAIL]
+      </span>
+    )
+  }
+  {
+    p.previewUrl && (
+      <>
+        <video muted loop playsinline preload="none" data-src={p.previewUrl} aria-hidden="true" />
+        <button class="play" type="button" data-preview-toggle aria-pressed="false">
+          <span class="sr-only">Play preview of {p.title}</span>
+          <span aria-hidden="true">▶</span>
+        </button>
+      </>
+    )
+  }
+</div>
+
+<style>
+  .thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: calc(var(--radius) - 6px);
+    background:
+      radial-gradient(80% 90% at 15% 10%, rgb(var(--h) / 0.35), transparent 60%),
+      conic-gradient(from var(--a) at 70% 70%, #0f766e55, #17223b, #0b1222, #0f766e55);
+  }
+  .thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(180deg, #000, transparent);
+    pointer-events: none;
+  }
+  img,
+  video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  video {
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  :global(.is-previewing) video {
+    opacity: 1;
+  }
+  .ph {
+    position: absolute;
+    inset: auto 14px 12px auto;
+    font: 600 0.7rem/1 var(--font-head);
+    letter-spacing: 0.12em;
+    color: rgb(232 237 246 / 0.55);
+  }
+  .play {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 2;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    background: rgb(7 11 22 / 0.6);
+    color: var(--text);
+    cursor: pointer;
+  }
+</style>

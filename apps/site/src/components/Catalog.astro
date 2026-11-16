@@ -1,0 +1,92 @@
+---
+import type { ProductType } from '@course-store/store-client';
+import { store } from '../lib/store';
+import { withSavings, TYPE_LABEL } from '../lib/catalog';
+import CourseCard from './CourseCard.astro';
+
+const s = await store();
+const products = await Promise.all((await s.listProducts()).map(withSavings));
+const types = [...new Set(products.map((p) => p.type))] as ProductType[];
+const DEFAULT = types.includes('course') ? 'course' : 'all';
+---
+
+<section id="courses" class="section" aria-labelledby="courses-title">
+  <div class="wrap">
+    <div class="head">
+      <div>
+        <p class="eyebrow" data-reveal>Catalog</p>
+        <h2 id="courses-title" class="h2" data-reveal>
+          Buy the whole course, or just what you need.
+        </h2>
+      </div>
+      <div class="filters" role="group" aria-label="Filter by type" data-filters data-reveal>
+        {
+          ['all', ...types].map((t) => (
+            <button type="button" data-filter={t} aria-pressed={t === DEFAULT ? 'true' : 'false'}>
+              {t === 'all' ? 'All' : `${TYPE_LABEL[t as ProductType]}s`}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+    <p class="sr-only" aria-live="polite" data-filter-status></p>
+    <div class="grid" data-grid data-default={DEFAULT}>
+      {products.map((p) => <CourseCard product={p} />)}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCatalog } from '../scripts/catalog';
+  initCatalog();
+</script>
+
+<style>
+  .head {
+    display: grid;
+    gap: 28px;
+    margin-bottom: 40px;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+    justify-self: start;
+  }
+  .filters button {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    font: 600 0.875rem/1 var(--font-head);
+    cursor: pointer;
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+  .filters button[aria-pressed='true'] {
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.35);
+  }
+  .grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  }
+  .grid :global([data-card][hidden]) {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .head {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+</style>

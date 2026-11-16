@@ -1,0 +1,80 @@
+---
+import { BRAND, TELEGRAM_BOT_URL } from '../lib/store';
+const base = Astro.url.pathname === '/' ? '' : '/';
+---
+
+<header class="nav">
+  <div class="wrap row">
+    <a class="logo" href="/" aria-label={`${BRAND} home`}>
+      <span class="mark" aria-hidden="true"></span>
+      {BRAND}
+    </a>
+    <nav aria-label="Primary">
+      <a href={`${base}#courses`}>Courses</a>
+      <a href={`${base}#pay`}>How to pay</a>
+      <a href={`${base}#faq`}>FAQ</a>
+    </nav>
+    <a class="btn btn-ghost tg" href={TELEGRAM_BOT_URL} rel="noopener">Telegram bot</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    background: rgb(7 11 22 / 0.62);
+    border-bottom: 1px solid var(--line);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 64px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 700 1.05rem/1 var(--font-head);
+    text-decoration: none;
+  }
+  .mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+    background: conic-gradient(
+      from 210deg,
+      var(--teal),
+      var(--teal-deep),
+      var(--amber),
+      var(--teal)
+    );
+  }
+  nav {
+    display: none;
+    gap: 28px;
+  }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.925rem;
+    transition: color 0.2s;
+  }
+  nav a:hover {
+    color: var(--text);
+  }
+  .tg {
+    min-height: 40px;
+    padding: 0 16px;
+    font-size: 0.875rem;
+  }
+  @media (min-width: 760px) {
+    nav {
+      display: flex;
+    }
+  }
+</style>

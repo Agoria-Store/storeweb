@@ -1,0 +1,98 @@
+---
+const options = [
+  {
+    key: 'download',
+    title: 'Download link',
+    body: 'After payment you get a private link to download the files. Links expire and have a limited number of downloads — save your files once you have them.',
+    points: ['Keep the files', 'Watch offline', 'Link expires: [EXPIRY TIME]'],
+  },
+  {
+    key: 'telegram',
+    title: 'Private Telegram channel',
+    body: 'After payment, send your order ID to our bot. It replies with a one-time invite to the course channel, valid for you only.',
+    points: ['Stream inside Telegram', 'Single-use invite', 'Updates posted in the channel'],
+  },
+];
+---
+
+<section class="section" aria-labelledby="delivery-title">
+  <div class="wrap">
+    <p class="eyebrow" data-reveal>Delivery</p>
+    <h2 id="delivery-title" class="h2" data-reveal>Two ways to get your course.</h2>
+    <p class="lede" data-reveal>Each product page says which one it uses.</p>
+    <div class="grid">
+      {
+        options.map((o) => (
+          <article class={`opt ${o.key}`} data-reveal>
+            <span class="icon" aria-hidden="true">
+              {o.key === 'download' ? '↓' : '➤'}
+            </span>
+            <h3>{o.title}</h3>
+            <p>{o.body}</p>
+            <ul>
+              {o.points.map((pt) => (
+                <li>{pt}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 18px;
+    margin-top: 40px;
+  }
+  .opt {
+    --c: 45 212 191;
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    padding: 28px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(70% 80% at 0% 0%, rgb(var(--c) / 0.12), transparent 60%), var(--surface);
+  }
+  .opt.telegram {
+    --c: 56 189 248;
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgb(var(--c) / 0.15);
+    color: rgb(var(--c));
+    font-size: 1.3rem;
+  }
+  h3 {
+    font-size: 1.4rem;
+  }
+  p {
+    color: var(--muted);
+  }
+  ul {
+    display: grid;
+    gap: 8px;
+    padding: 0;
+    margin: 6px 0 0;
+    list-style: none;
+    font-size: 0.925rem;
+  }
+  li::before {
+    content: '✓';
+    margin-right: 10px;
+    color: rgb(var(--c));
+  }
+  @media (min-width: 760px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

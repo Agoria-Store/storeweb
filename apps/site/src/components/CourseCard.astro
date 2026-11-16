@@ -1,0 +1,135 @@
+---
+import { formatUsdt } from '@course-store/store-client';
+import { productHref, TYPE_LABEL, type Listed } from '../lib/catalog';
+import Thumb from './Thumb.astro';
+
+interface Props {
+  product: Listed;
+}
+const { product: p } = Astro.props;
+const unit = p.type === 'bundle' ? 'items' : 'chapters';
+---
+
+<article class="card" data-card data-type={p.type} data-reveal>
+  <div class="inner">
+    <Thumb product={p} />
+    <div class="body">
+      <div class="meta">
+        <span class="chip">{TYPE_LABEL[p.type]}</span>
+        {
+          p.childCount > 0 && (
+            <span class="count">
+              {p.childCount} {unit}
+            </span>
+          )
+        }
+      </div>
+      <h3><a href={productHref(p)} class="stretched">{p.title}</a></h3>
+      <p class="desc">{p.description}</p>
+      <div class="foot">
+        <span class="money price">{formatUsdt(p.priceUsdt)}</span>
+        {p.savings > 0 && <span class="save">Save {p.savings}%</span>}
+      </div>
+    </div>
+    <span class="glare" aria-hidden="true"></span>
+  </div>
+</article>
+
+<style>
+  .card {
+    --rx: 0deg;
+    --ry: 0deg;
+    perspective: 900px;
+  }
+  .inner {
+    position: relative;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 8px;
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, var(--surface), var(--bg-2));
+    border: 1px solid var(--line);
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition:
+      transform 0.5s var(--ease),
+      border-color 0.3s,
+      box-shadow 0.4s;
+    transform-style: preserve-3d;
+  }
+  .card:hover .inner,
+  .card:focus-within .inner {
+    border-color: rgb(45 212 191 / 0.4);
+    box-shadow: 0 30px 60px -30px rgb(45 212 191 / 0.35);
+  }
+  .card.tilting .inner {
+    transition:
+      transform 0.12s linear,
+      border-color 0.3s,
+      box-shadow 0.4s;
+  }
+  .glare {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      400px circle at var(--gx, 50%) var(--gy, 0%),
+      rgb(255 255 255 / 0.07),
+      transparent 45%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .card.tilting .glare {
+    opacity: 1;
+  }
+  .body {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    padding: 16px 12px 12px;
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .count {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  h3 {
+    font-size: 1.3rem;
+  }
+  .stretched {
+    text-decoration: none;
+  }
+  .stretched::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .desc {
+    color: var(--muted);
+    font-size: 0.925rem;
+  }
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+  }
+  .price {
+    font-size: 1.15rem;
+  }
+  .save {
+    font: 600 0.75rem/1 var(--font-head);
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: var(--amber);
+    background: rgb(245 158 11 / 0.12);
+    border: 1px solid rgb(245 158 11 / 0.3);
+  }
+</style>
