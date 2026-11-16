@@ -1,22 +1,23 @@
 # Design
 
-A calm, light storefront built around one hero object: a glossy 3D USDT coin. Craft bar: Apple product pages, Stripe, Gumroad / Lemon Squeezy. Tokens live in `apps/site/src/styles/global.css`.
+A calm, light storefront built around one hero object: a detailed 3D gold Bitcoin coin. Palette is graphite and gold: stone ground, ink actions, gold reserved for value. Craft bar: Apple product pages, Stripe, Gumroad / Lemon Squeezy. Tokens live in `apps/site/src/styles/global.css`.
 
 ## Color
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--bg` | #FBFBFD | Page background, nav |
+| `--bg` | #F5F4F0 | Page background (warm stone), nav |
 | `--surface` | #FFFFFF | Cards |
-| `--surface-2` | #F0F2F7 | Inset panels, filter track |
-| `--ink` | #121826 | Text, dark CTA card |
-| `--muted` | #4A5468 | Secondary text |
-| `--line` | #E3E6EE | Dividers |
-| `--primary` | #5B3DF5 | Primary buttons, active states, focus ring |
-| `--primary-soft` | #EEEAFF | Tints behind primary numbers/icons |
-| `--money` | #08734F | USDT prices |
-| `--tether` | #26A17B | The coin, the USDT dot |
-| `--sun` | #FFD23F | "Save X%" badges only |
+| `--surface-2` | #EEEBE4 | Inset panels, filter track |
+| `--ink` | #16150F | Text, dark CTA card |
+| `--muted` | #5A564C | Secondary text |
+| `--line` | #E2DED4 | Dividers |
+| `--primary` | #16150F | Primary buttons (ink), active states, focus ring |
+| `--primary-soft` | #EFE7D6 | Gold tint behind numbers/icons |
+| `--gold` | #C8902E | Accent: coin glow, illustration highlights |
+| `--money` | #7A4F0E | Prices (deep gold) |
+| `--tether` | #3D7A5F | The USDT dot only |
+| `--sun` | #ECD29A | "Save X%" badges only |
 | `--tg` / `--tg-soft` | #1D8FD1 / #E3F3FC | Telegram delivery only |
 
 ## Type
@@ -40,5 +41,5 @@ A real `thumbnailUrl` always replaces the illustration.
 ## Motion
 
 - Hero layout: below 1024px centred and stacked; at 1024px+ two columns (copy left, coin right) filling the first screen (min-height 100svh minus nav).
-- Hero coin: SVG coin renders immediately. The three.js coin (`scripts/coin-gl.ts`) loads on the visitor's first move or after 6 s, sways gently facing the viewer, tilts with the pointer and turns once as you scroll out of the hero. Skipped with reduced motion, slow data or no WebGL2.
+- Hero coin: SVG coin renders immediately. The three.js Bitcoin coin (`scripts/coin-gl.ts`: gold metal, canvas-engraved inscription and circuit traces, extruded ₿, reeded edge) loads on the visitor's first move or after 6 s, sways gently facing the viewer, tilts with the pointer and turns once as you scroll out of the hero. Skipped with reduced motion, slow data or no WebGL2.
 - Desktop only (fine pointer): Lenis smooth scroll and the pinned four-step payment section. Below 900px, or without JS, the four steps show as a plain stacked list.

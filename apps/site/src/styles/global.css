@@ -1,25 +1,27 @@
 :root {
-  --bg: #fbfbfd;
+  /* Graphite and gold: stone ground, ink actions, gold reserved for value. */
+  --bg: #f5f4f0;
   --surface: #ffffff;
-  --surface-2: #f0f2f7;
-  --ink: #121826;
-  --muted: #4a5468; /* 7.6:1 on --bg */
-  --line: #e3e6ee;
-  --primary: #5b3df5;
-  --primary-ink: #4527e0;
-  --primary-soft: #eeeaff;
-  --money: #08734f; /* 5.9:1 on white, 5.3:1 on --surface-2 */
-  --sun: #ffd23f;
+  --surface-2: #eeebe4;
+  --ink: #16150f;
+  --muted: #5a564c; /* 6.6:1 on --bg */
+  --line: #e2ded4;
+  --primary: #16150f;
+  --primary-ink: #2e2b22;
+  --primary-soft: #efe7d6;
+  --gold: #c8902e;
+  --money: #7a4f0e; /* 7.3:1 on white, 6.1:1 on --surface-2 */
+  --sun: #ecd29a;
   --tg: #1d8fd1;
   --tg-soft: #e3f3fc;
-  --tether: #26a17b;
+  --tether: #3d7a5f;
 
   --font: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', system-ui, sans-serif;
   --radius: 16px;
   --radius-sm: 10px;
   --shadow: 0 1px 2px rgb(18 24 38 / 0.06), 0 12px 32px -12px rgb(18 24 38 / 0.18);
-  --shadow-lg: 0 2px 4px rgb(18 24 38 / 0.06), 0 30px 60px -20px rgb(39 28 120 / 0.3);
+  --shadow-lg: 0 2px 4px rgb(18 24 38 / 0.06), 0 30px 60px -20px rgb(40 30 10 / 0.3);
   --wrap: min(1320px, 100% - clamp(32px, 7vw, 120px));
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   color-scheme: light;
@@ -156,7 +158,7 @@ svg {
 .btn-primary {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 8px 20px -8px rgb(91 61 245 / 0.7);
+  box-shadow: 0 10px 24px -10px rgb(22 21 15 / 0.55);
 }
 .btn-primary:hover {
   background: var(--primary-ink);

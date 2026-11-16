@@ -23,7 +23,7 @@ const candles = Array.from({ length: 13 }, (_, i) => {
 const trend = candles
   .map((c, i) => `${i ? 'L' : 'M'}${c.x} ${((c.open + c.close) / 2).toFixed(1)}`)
   .join(' ');
-const bg = { candles: '#eef1ff', network: '#e8f6f0', wave: '#fff0f6', layers: '#fff6dc' }[art];
+const bg = { candles: '#efeae0', network: '#e9efe9', wave: '#f3ece1', layers: '#f6eedb' }[art];
 const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
   const a = (i / 6) * Math.PI * 2 + 0.4;
   const r = i % 2 ? 78 : 52;
@@ -34,30 +34,30 @@ const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
 {
   number !== undefined ? (
     <svg class="art" viewBox="0 0 320 200" aria-hidden="true">
-      <rect width="320" height="200" fill="#f1f3f8" />
+      <rect width="320" height="200" fill="#efece6" />
       <text x="24" y="176" class="num">
         {String(number).padStart(2, '0')}
       </text>
       {art === 'candles' &&
         candles.slice(4, 9).map((c, i) => (
           <g transform="translate(110 -10)">
-            <line x1={c.x} x2={c.x} y1={c.hi} y2={c.lo} stroke="#9aa3b5" stroke-width="2" />
+            <line x1={c.x} x2={c.x} y1={c.hi} y2={c.lo} stroke="#a39c8b" stroke-width="2" />
             <rect
               x={c.x - 6}
               y={Math.min(c.open, c.close)}
               width="12"
               height={Math.max(Math.abs(c.open - c.close), 4)}
               rx="2"
-              fill={i === 4 ? '#5b3df5' : c.close < c.open ? '#26a17b' : '#c5cbd8'}
+              fill={i === 4 ? '#c8902e' : c.close < c.open ? '#3d7a5f' : '#cfc8b8'}
             />
           </g>
         ))}
       {art !== 'candles' && (
         <g fill="none" stroke-width="2">
-          <ellipse cx="250" cy="70" rx="44" ry="20" stroke="#c5cbd8" />
-          <ellipse cx="250" cy="70" rx="26" ry="11" stroke="#c5cbd8" />
-          <circle cx="250" cy="70" r="9" fill="#26a17b" stroke="none" />
-          <circle cx="294" cy="70" r="5" fill="#5b3df5" stroke="none" />
+          <ellipse cx="250" cy="70" rx="44" ry="20" stroke="#cfc8b8" />
+          <ellipse cx="250" cy="70" rx="26" ry="11" stroke="#cfc8b8" />
+          <circle cx="250" cy="70" r="9" fill="#3d7a5f" stroke="none" />
+          <circle cx="294" cy="70" r="5" fill="#c8902e" stroke="none" />
         </g>
       )}
     </svg>
@@ -67,26 +67,26 @@ const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
       {art === 'candles' && (
         <g>
           {[50, 90, 130, 170].map((y) => (
-            <line x1="20" x2="300" y1={y} y2={y} stroke="#d8dcf3" stroke-width="1" />
+            <line x1="20" x2="300" y1={y} y2={y} stroke="#ddd6c7" stroke-width="1" />
           ))}
           {candles.map((c) => (
             <g>
-              <line x1={c.x} x2={c.x} y1={c.hi} y2={c.lo} stroke="#7b84a3" stroke-width="2" />
+              <line x1={c.x} x2={c.x} y1={c.hi} y2={c.lo} stroke="#8b8473" stroke-width="2" />
               <rect
                 x={c.x - 6}
                 y={Math.min(c.open, c.close)}
                 width="12"
                 height={Math.max(Math.abs(c.open - c.close), 4)}
                 rx="2"
-                fill={c.close < c.open ? '#26a17b' : '#e8577a'}
+                fill={c.close < c.open ? '#3d7a5f' : '#b5523b'}
               />
             </g>
           ))}
-          <path d={trend} fill="none" stroke="#5b3df5" stroke-width="3" stroke-linecap="round" />
+          <path d={trend} fill="none" stroke="#c8902e" stroke-width="3" stroke-linecap="round" />
           <g transform="translate(222 26)">
             <rect width="74" height="28" rx="14" fill="#fff" />
-            <circle cx="16" cy="14" r="7" fill="#26a17b" />
-            <rect x="29" y="11" width="34" height="6" rx="3" fill="#121826" />
+            <circle cx="16" cy="14" r="7" fill="#3d7a5f" />
+            <rect x="29" y="11" width="34" height="6" rx="3" fill="#16150f" />
           </g>
         </g>
       )}
@@ -98,7 +98,7 @@ const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
             rx="122"
             ry="66"
             fill="none"
-            stroke="#bfe5d6"
+            stroke="#d6cdb8"
             stroke-width="2"
           />
           <ellipse
@@ -107,23 +107,23 @@ const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
             rx="80"
             ry="42"
             fill="none"
-            stroke="#bfe5d6"
+            stroke="#d6cdb8"
             stroke-width="2"
           />
           {nodes.map((n, i) => (
             <g>
-              <line x1="160" y1="100" x2={n.x} y2={n.y} stroke="#9fd8c2" stroke-width="1.5" />
+              <line x1="160" y1="100" x2={n.x} y2={n.y} stroke="#cbbf9f" stroke-width="1.5" />
               <circle
                 cx={n.x}
                 cy={n.y}
                 r={i % 2 ? 10 : 7}
-                fill={i % 3 === 0 ? '#5b3df5' : '#fff'}
-                stroke="#26a17b"
+                fill={i % 3 === 0 ? '#c8902e' : '#fff'}
+                stroke="#3d7a5f"
                 stroke-width="2"
               />
             </g>
           ))}
-          <circle cx="160" cy="100" r="30" fill="#26a17b" />
+          <circle cx="160" cy="100" r="30" fill="#3d7a5f" />
           <rect x="146" y="86" width="28" height="7" rx="2" fill="#f3fff9" />
           <rect x="156" y="90" width="8" height="24" rx="2" fill="#f3fff9" />
         </g>
@@ -133,25 +133,25 @@ const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
           {[0, 1, 2, 3, 4].map((i) => (
             <path
               d={`M-10 ${150 - i * 18} C 70 ${70 - i * 10}, 140 ${190 - i * 14}, 220 ${110 - i * 12} S 330 ${60 - i * 6}, 340 ${70 - i * 8}`}
-              stroke={['#5b3df5', '#ff7ac6', '#ffb35c', '#26a17b', '#121826'][i]}
+              stroke={['#c8902e', '#e7c98a', '#a8681a', '#3d7a5f', '#16150f'][i]}
               stroke-width={i === 0 ? 4 : 2}
               opacity={i === 0 ? 1 : 0.55}
             />
           ))}
-          <circle cx="220" cy="110" r="8" fill="#fff" stroke="#5b3df5" stroke-width="3" />
+          <circle cx="220" cy="110" r="8" fill="#fff" stroke="#c8902e" stroke-width="3" />
         </g>
       )}
       {art === 'layers' && (
         <g>
           {[
-            ['#5b3df5', 0],
-            ['#ff7ac6', 1],
-            ['#26a17b', 2],
+            ['#c8902e', 0],
+            ['#e7c98a', 1],
+            ['#3d7a5f', 2],
           ].map(([c, i]) => (
             <g transform={`translate(0 ${-(i as number) * 26})`}>
               <path d="M160 168 L250 128 L160 88 L70 128 Z" fill={c as string} opacity="0.95" />
-              <path d="M70 128 L70 138 L160 178 L160 168 Z" fill="#121826" opacity="0.18" />
-              <path d="M250 128 L250 138 L160 178 L160 168 Z" fill="#121826" opacity="0.28" />
+              <path d="M70 128 L70 138 L160 178 L160 168 Z" fill="#16150f" opacity="0.18" />
+              <path d="M250 128 L250 138 L160 178 L160 168 Z" fill="#16150f" opacity="0.28" />
             </g>
           ))}
         </g>
@@ -170,6 +170,6 @@ const nodes = [0, 1, 2, 3, 4, 5].map((i) => {
   .num {
     font: 600 84px/1 var(--font);
     letter-spacing: -0.05em;
-    fill: #121826;
+    fill: #16150f;
   }
 </style>
