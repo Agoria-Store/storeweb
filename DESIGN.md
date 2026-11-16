@@ -35,8 +35,8 @@ A real `thumbnailUrl` always replaces the illustration.
 ## Components
 
 - Cards: white, 16px radius, one soft shadow; hover lifts 4px. Footer row shows delivery and "View course" in primary.
-- Buttons: pill. Primary violet, Secondary white with border, `.small` for inline actions.
-- Prices `.price` in green with "USDT"; savings in a yellow `.badge-save`, always computed from catalog data.
+- Buttons: pill. Primary ink (#16150F), Secondary white with border, `.small` for inline actions.
+- Prices `.price` in deep gold with "USDT"; savings in a pale gold `.badge-save`, always computed from catalog data.
 
 ## Motion
 
